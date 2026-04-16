@@ -1,0 +1,303 @@
+<!-- templates/help.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA PROTOCOLS -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Vault Help">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/000000/safe.png">
+    <meta name="theme-color" content="#020617">
+
+    <title>Sovereign Vault | Help Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background-color: #020617; 
+            color: #f1f5f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            line-height: 1.6;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+        }
+
+        .gold-text { color: #d4af37; }
+        .indigo-text { color: #818cf8; }
+        
+        .step-number {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #a67c00 100%);
+            color: #000;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Smooth scroll for anchor links */
+        html { scroll-behavior: smooth; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- HEADER / NAVIGATION -->
+    <nav class="h-20 bg-slate-950/90 backdrop-blur-md border-b border-white/5 px-6 flex items-center justify-between sticky top-0 z-[1000]">
+        <div class="flex items-center gap-4">
+            <a href="/notes" class="text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="flex items-center gap-2">
+                <h1 class="text-xs font-black uppercase tracking-widest text-white leading-none">Vault <span class="gold-text">Protocol</span></h1>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="mailto:support@vault.com" class="hidden md:flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all mr-4">
+                <i class="fas fa-headset text-indigo-400"></i> Get Help
+            </a>
+            <a href="/notes" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg">Enter Vault</a>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto p-6 space-y-10 mt-6 text-left">
+        
+        <!-- INTRO HERO -->
+        <header class="text-center space-y-4 py-10">
+            <div class="h-16 w-16 bg-amber-500/10 rounded-full mx-auto flex items-center justify-center border border-amber-500/20">
+                <i class="fas fa-book-open gold-text text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-black italic uppercase leading-tight tracking-tighter">Your Life, <span class="gold-text">Sealed.</span></h2>
+            <p class="text-sm text-slate-400 max-w-md mx-auto font-medium">
+                The Sovereign Heritage Core is a hardware-bound security protocol designed to keep your most sensitive data under your physical control.
+            </p>
+        </header>
+
+        <!-- SECTION 1: LOGIN -->
+        <section class="space-y-4" id="step1">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="step-number">1</div>
+                <h3 class="text-lg font-black uppercase tracking-widest italic">The Hardware Handshake</h3>
+            </div>
+            
+            <div class="glass-card p-6 space-y-4">
+                <div class="flex gap-4">
+                    <div class="shrink-0 pt-1 text-indigo-400"><i class="fas fa-key"></i></div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm uppercase">Master Credentials</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-1">Enter your Master Email and Vault Password. These are the primary keys to your encrypted database.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 border-t border-white/5 pt-4">
+                    <div class="shrink-0 pt-1 text-amber-500"><i class="fas fa-shield-halved"></i></div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm uppercase">Identity Challenge</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                            If you use a <span class="text-white">new phone</span> or browser, the system will detect "Unknown Hardware." You will be asked a security question to prove physical ownership.
+                        </p>
+                        <div class="mt-3 bg-black/40 p-3 rounded-xl border border-white/5">
+                            <p class="text-[9px] font-bold text-amber-500 uppercase tracking-widest"><i class="fas fa-info-circle mr-1"></i> Trusting Device</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Once verified, the device is "Trusted" for one year, bypassing future challenges.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: NAVIGATION -->
+        <section class="space-y-4" id="step2">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="step-number">2</div>
+                <h3 class="text-lg font-black uppercase tracking-widest italic">Navigation Protocol</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card p-5 border-l-2 border-indigo-500">
+                    <h5 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">1. Folders (Categories)</h5>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">Select a category folder to unlock the record list inside.</p>
+                </div>
+                <div class="glass-card p-5 border-l-2 border-emerald-500">
+                    <h5 class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">2. Records (Registry)</h5>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">Click a title to view details. A <i class="fas fa-paperclip"></i> icon indicates a file is attached.</p>
+                </div>
+                <div class="glass-card p-5 border-l-2 border-amber-500">
+                    <h5 class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2">3. Details (Notes)</h5>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">View secure text or download attached files (PDFs, images) directly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DATA MANAGEMENT -->
+        <section class="space-y-4" id="step3">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="step-number">3</div>
+                <h3 class="text-lg font-black uppercase tracking-widest italic">Data Management</h3>
+            </div>
+
+            <div class="glass-card overflow-hidden">
+                <div class="p-6 border-b border-white/5">
+                    <h4 class="text-sm font-bold text-white uppercase"><i class="fas fa-plus-circle mr-2 text-indigo-400"></i> Adding New Records</h4>
+                    <p class="text-xs text-slate-400 mt-2">Open a folder, click the (+) button, and enter your content. Use the "Attachment" field to seal files into the database.</p>
+                </div>
+                <div class="p-6 bg-black/20">
+                    <h4 class="text-sm font-bold text-white uppercase"><i class="fas fa-edit mr-2 text-amber-500"></i> Editor Hub / Information Root</h4>
+                    <p class="text-xs text-slate-400 mt-2">The "Information Root" represents the Folder (Category) where your record lives. You can change this to move records between folders.</p>
+                </div>
+                <div class="p-6 bg-rose-900/5">
+                    <h4 class="text-sm font-bold text-white uppercase"><i class="fas fa-trash-alt mr-2 text-rose-500"></i> Deleting Records</h4>
+                    <p class="text-xs text-slate-400 mt-2">Deletion is permanent. Because this is a sovereign system, there is no "Recycle Bin" on the server.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: BACKUP & RESTORE -->
+        <section class="space-y-4" id="heritage">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="step-number bg-emerald-500/20 text-emerald-400 border-emerald-500/20">4</div>
+                <h3 class="text-lg font-black uppercase tracking-widest italic">The Heritage Protocol (Backup & Restore)</h3>
+            </div>
+
+            <div class="glass-card p-6 space-y-6">
+                <div class="flex gap-4">
+                    <div class="shrink-0 pt-1 text-indigo-400 text-xl"><i class="fas fa-cloud-download-alt"></i></div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm uppercase">Backup (Heritage Export)</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                            Clicking **Backup** generates a JSON file containing your vault data. 
+                            <br><br>
+                            <span class="text-amber-500 font-bold uppercase text-[9px]">Standard/Pro Tier:</span> Portable JSON format. You are responsible for keeping this file in a safe, private location.
+                            <br>
+                            <span class="gold-text font-bold uppercase text-[9px]">Elite Tier:</span> Zero-Knowledge "Sealed" Blob. The file is itself encrypted and requires your master key to even read the structure.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ADDED: BINARY ZIP ADVISORY -->
+                <div class="flex gap-4 border-t border-white/5 pt-4">
+                    <div class="shrink-0 pt-1 text-amber-500 text-xl"><i class="fas fa-file-archive"></i></div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm uppercase">Binary Archive (ZIP Protocol)</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                            For users with large volumes of attached files, the **Binary Archive** protocol allows you to save the entire `note_attachments` table as a high-density ZIP file. 
+                            <br><br>
+                            <span class="text-indigo-400 font-bold uppercase text-[8px]">Technical Logic:</span> This archive contains the raw binary content of every file in your vault, paired with a metadata manifest to ensure they re-attach to the correct records upon restoration.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 border-t border-white/5 pt-4">
+                    <div class="shrink-0 pt-1 text-emerald-400 text-xl"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm uppercase">Restore (Heritage Import)</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                            If you get a new phone or need to move your data to a different device, use the **Restore** button. Select your previously saved JSON or ZIP archive to instantly re-inject your records and categories into the new node.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/10">
+                    <p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest"><i class="fas fa-exclamation-triangle mr-1"></i> Security Note</p>
+                    <p class="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                        For all users, "Restore" is only possible if you are logged in with the same master credentials. <span class="text-slate-300">Standard tier users must be extra vigilant in protecting their backup files as they are not internally sealed. Binary ZIPs should be stored in a physical safe.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: SUPPORT -->
+        <section class="space-y-4" id="support">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="step-number bg-indigo-500/20 text-indigo-400 border-indigo-500/20"><i class="fas fa-headset text-[10px]"></i></div>
+                <h3 class="text-lg font-black uppercase tracking-widest italic">Concierge Support</h3>
+            </div>
+
+            <div class="glass-card p-8 text-center space-y-6 border-indigo-500/20">
+                <h4 class="text-white font-black uppercase italic tracking-tighter text-xl">Still need assistance?</h4>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    Our technical team can help with hardware verification issues, database synchronization, or account recovery protocols.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <a href="mailto:support@vault.com" class="btn-gold px-8 py-4 rounded-2xl text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                        <i class="fas fa-envelope"></i> Email Support
+                    </a>
+                    <a href="#" class="bg-white/5 border border-white/10 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
+                        <i class="fas fa-comment-dots"></i> Live Chat
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: TROUBLESHOOTING -->
+        <section class="space-y-4">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="step-number">?</div>
+                <h3 class="text-lg font-black uppercase tracking-widest italic">System Recovery</h3>
+            </div>
+
+            <div class="space-y-3">
+                <div class="glass-card p-5 flex items-start gap-4">
+                    <div class="text-rose-500 mt-1"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div>
+                        <h5 class="text-xs font-black uppercase text-white">"Not Found" / 404 Errors</h5>
+                        <p class="text-[11px] text-slate-400 mt-1">Usually caused by an expired session. Refresh the page or go back to the login screen to re-authenticate.</p>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-5 flex items-start gap-4">
+                    <div class="text-indigo-400 mt-1"><i class="fas fa-fingerprint"></i></div>
+                    <div>
+                        <h5 class="text-xs font-black uppercase text-white">Biometric Latching</h5>
+                        <p class="text-[11px] text-slate-400 mt-1">On iOS/Android, add this page to your Home Screen. You can then use FaceID or Fingerprint to unlock the vault icon itself.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center pt-20 border-t border-white/5 opacity-40">
+            <p class="text-[9px] font-black uppercase tracking-[0.6em] text-slate-500">Sovereign Heritage Core • Enterprise 4.0</p>
+        </footer>
+
+    </main>
+
+    <!-- MOBILE QUICK NAV -->
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-auto flex items-center gap-2 bg-slate-900/80 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl z-[2000]">
+        <a href="#step1" class="h-10 w-10 flex items-center justify-center text-slate-500 hover:text-white" title="Identity"><i class="fas fa-key"></i></a>
+        <a href="#step2" class="h-10 w-10 flex items-center justify-center text-slate-500 hover:text-white" title="Navigation"><i class="fas fa-map"></i></a>
+        <a href="#heritage" class="h-10 w-10 flex items-center justify-center text-emerald-500 hover:text-white" title="Heritage Protocol"><i class="fas fa-sync"></i></a>
+        <a href="#support" class="h-10 w-10 flex items-center justify-center text-indigo-400 hover:text-white" title="Support"><i class="fas fa-headset"></i></a>
+        <div class="h-6 w-px bg-white/10 mx-2"></div>
+        <a href="/notes" class="h-10 px-4 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-indigo-400">Exit</a>
+    </div>
+
+</body>
+</html>

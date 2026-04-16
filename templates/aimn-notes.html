@@ -1,0 +1,477 @@
+<!-- templates/aimn-notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- APPLE MOBILE OPTIMIZATION (iOS PWA) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sovereign">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/000000/safe.png">
+    
+    <title>Sovereign Heritage | Secure Personal Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        html, body { background-color: #020617; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; overflow-x: hidden; height: 100vh; width: 100%; text-align: left; }
+        
+        /* THE MECHANICAL VAULT FRAME */
+        .vault-frame { position: fixed; z-index: 5000; background: #0f172a; border: 1px solid rgba(212, 175, 55, 0.1); display: flex; align-items: center; justify-content: center; width: 100%; }
+        .frame-top { top: 0; height: 10rem; border-bottom: 2px solid #d4af37; flex-direction: column; }
+        
+        /* SIDE FRAMES */
+        .frame-left { top: 10rem; bottom: 0; left: 0; width: 4.5rem; border-right: 1px solid rgba(212, 175, 55, 0.2); flex-direction: column; padding-top: 1.5rem; background: #020617; position: fixed; }
+        .frame-right { top: 10rem; bottom: 0; right: 0; width: 4.5rem; border-left: 1px solid rgba(212, 175, 55, 0.2); flex-direction: column; padding-top: 1.5rem; background: #020617; position: fixed; }
+
+        /* LIST ITEM VISIBILITY */
+        .list-item { padding: 18px 20px; border-radius: 16px; transition: all 0.2s; font-size: 11px; font-weight: 800; display: block; color: #ffffff !important; margin-bottom: 4px; border: 1px solid transparent; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; cursor: pointer; text-decoration: none !important; }
+        .list-item span { color: #ffffff !important; font-weight: 900; }
+        .list-item:hover { background: rgba(255,255,255,0.05); }
+        .list-item.active { background: #4f46e5 !important; color: white !important; border-color: #6366f1; box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+        
+        /* MAIN PORTAL AREA */
+        .main-portal { position: absolute; top: 10rem; bottom: 0; left: 4.5rem; right: 4.5rem; overflow-y: auto; padding: 1rem; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); scroll-behavior: auto; }
+        .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 28px; display: flex; flex-direction: column; height: 100%; min-height: 450px; }
+        
+        .hud-stripe { height: 3.33rem; display: flex; align-items: center; padding: 0 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; width: 100%; }
+        .btn-nav-square { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 0 10px; flex-grow: 1; border-right: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; text-decoration: none !important; color: inherit; transition: all 0.2s; }
+        .btn-nav-square:hover { background: rgba(255,255,255,0.05); }
+        .hud-label { font-size: 7px; font-weight: 900; text-transform: uppercase; tracking: 0.1em; margin-top: 3px; }
+        
+        .input-vault { background: #0f172a !important; border: 1px solid #334155 !important; color: white !important; padding: 16px; border-radius: 14px; width: 100%; font-size: 0.9rem; outline: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* ELITE LEDGER TABLE STYLING */
+        .elite-matrix { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .elite-matrix th { background: rgba(212, 175, 55, 0.1); color: #d4af37; padding: 12px; text-transform: uppercase; font-weight: 900; letter-spacing: 0.1em; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .elite-matrix td { padding: 12px; color: #e2e8f0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0,0,0,0.2); }
+        .elite-matrix tr:last-child td { border-bottom: none; }
+        .elite-matrix tr:hover td { background: rgba(212, 175, 55, 0.05); }
+
+        @media (max-width: 1024px) {
+            .mobile-hidden { display: none !important; }
+            .frame-left, .frame-right { display: none !important; }
+            .main-portal { left: 0; right: 0; padding: 0.75rem; }
+            .card { min-height: calc(100vh - 12rem); border-radius: 32px; }
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <!-- HUD FRAME -->
+    <div class="vault-frame frame-top">
+        <!-- IDENTITY BAR -->
+        <div class="bg-[#4f46e5] text-white h-[1.5rem] w-full flex items-center justify-center text-[8px] font-black uppercase tracking-widest">
+            <i class="fas fa-shield-check mr-2"></i> {{ session['user_email'] }} 
+            <span class="bg-amber-500 text-black px-2 py-0.5 rounded ml-2 text-[7px] font-black tracking-tighter uppercase shadow-lg">ELITE_STATUS_ACTIVE</span>
+        </div>
+        
+        <div class="hud-stripe bg-black/40">
+            <div class="flex items-center gap-3 flex-1 text-left">
+                <div class="h-8 w-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xl"><i class="fas fa-lock text-sm"></i></div>
+                <div class="flex flex-col text-left">
+                    <h1 class="text-[10px] font-black uppercase text-white tracking-widest leading-none">Sovereign <span class="text-amber-500">Heritage</span></h1>
+                    <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest mt-1">Secure Personal Database</span>
+                </div>
+            </div>
+            <a href="/logout" class="bg-rose-600 text-white px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">Logout</a>
+        </div>
+        
+        <!-- UTILITY LINKS -->
+        <div class="hud-stripe p-0 justify-between gap-1 px-1 bg-slate-900/60 shadow-inner">
+            <button onclick="toggleModal('addCategoryModal')" class="btn-nav-square text-amber-500" title="New Folder">
+                <i class="fas fa-folder-plus text-sm"></i><span class="hud-label">New Folder</span>
+            </button>
+            <a href="/billing" class="btn-nav-square text-emerald-400" title="Billing">
+                <i class="fas fa-credit-card text-sm"></i><span class="hud-label">Billing</span>
+            </a>
+            <div class="flex flex-1 gap-px">
+                <a href="/export_vault" class="btn-nav-square text-slate-400" title="Backup">
+                    <i class="fas fa-cloud-download-alt text-sm"></i><span class="hud-label">Backup</span>
+                </a>
+                <button onclick="toggleModal('restoreModal')" class="btn-nav-square text-slate-400" title="Restore">
+                    <i class="fas fa-cloud-upload-alt text-sm"></i><span class="hud-label">Restore</span>
+                </button>
+            </div>
+            <a href="/ai" class="btn-nav-square text-indigo-400" title="Oracle">
+                <i class="fas fa-sparkles text-sm"></i><span class="hud-label">Oracle</span>
+            </a>
+            <a href="/help" class="btn-nav-square text-white" title="Guide">
+                <i class="fas fa-question-circle text-sm"></i><span class="hud-label">Guide</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- SIDE FRAMES -->
+    <div class="frame-left"></div><div class="frame-right"></div>
+
+    <!-- MAIN PORTAL -->
+    <div id="vault-portal-container" class="main-portal custom-scrollbar">
+        <div class="max-w-7xl mx-auto w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-24 lg:pb-0">
+                
+                <!-- COL 1: FOLDERS -->
+                <div id="step-1-folders" class="lg:col-span-3 text-left {% if selected_category %}mobile-hidden{% endif %}">
+                    <div class="card p-6">
+                        <div class="flex justify-between items-center mb-4 text-left">
+                            <div class="flex flex-col text-left">
+                                <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">1. Folders</h3>
+                                <span class="text-[8px] font-bold text-slate-600 uppercase italic leading-none">Categories</span>
+                            </div>
+                            {% if selected_category and selected_category.id > 2 %}
+                                <button onclick="openManageFolder('{{ selected_category.id }}', '{{ selected_category.name }}')" class="text-amber-500 hover:text-amber-400 transition-all"><i class="fas fa-cog"></i></button>
+                            {% endif %}
+                        </div>
+
+                        <!-- CATEGORY FIND-SEARCH -->
+                        <div class="relative mb-4">
+                            <input type="text" id="catSearch" onkeyup="filterCategories()" placeholder="Find Folder..." 
+                                   class="input-vault !p-3 !text-[10px] bg-black/20 border-white/5 uppercase font-black tracking-widest shadow-inner w-full pr-10">
+                            <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 text-[10px]"></i>
+                        </div>
+                        
+                        <div class="overflow-y-auto custom-scrollbar flex-1" id="catList">
+                            {% for cat in categories %}
+                            <a href="/notes?cat_id={{ cat.id }}" id="cat-nav-{{ cat.id }}" class="list-item {{ 'active' if selected_category and selected_category.id == cat.id else '' }}">
+                                {{ cat.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COL 2: REGISTRY / EDITOR (Step 2) -->
+                <div id="step-2-registry" class="lg:col-span-4 text-left {% if not selected_category or (selected_record and not request.args.get('edit')) %}mobile-hidden{% endif %}">
+                    <div class="card p-6" id="registryColumn">
+                        
+                        <!-- MODE A: LIST VIEW -->
+                        <div id="registryListView" class="flex flex-col h-full {% if request.args.get('edit') %}hidden{% endif %}">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center gap-3 text-left">
+                                    <a href="/notes" class="lg:hidden h-8 w-8 flex items-center justify-center bg-white/5 rounded-full text-slate-400 shadow-lg"><i class="fas fa-chevron-left text-xs"></i></a>
+                                    <div class="flex flex-col text-left">
+                                        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">2. Registry Titles</h3>
+                                        <span class="text-[8px] font-bold text-slate-600 uppercase italic leading-none">List of Records</span>
+                                    </div>
+                                </div>
+                                <button onclick="toggleModal('recordModal')" class="bg-indigo-600 text-white h-8 w-8 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition-all"><i class="fas fa-plus"></i></button>
+                            </div>
+                            
+                            <div class="overflow-y-auto custom-scrollbar flex-1" id="titleList">
+                                {% if titles %}
+                                    {% for t in titles %}
+                                    <a href="/notes?cat_id={{ selected_category.id }}&note_id={{ t.id }}" class="list-item {{ 'active' if selected_record and selected_record.id == t.id else '' }}">
+                                        <div class="flex justify-between items-center">
+                                            <span class="truncate pr-4 !text-white font-black">{{ t.title }}</span>
+                                            {% if t.file_count > 0 %}<i class="fas fa-paperclip text-[10px] text-indigo-400"></i>{% endif %}
+                                        </div>
+                                    </a>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="py-24 text-center opacity-20 italic text-[10px] uppercase font-black tracking-widest text-white text-center">Select Folder</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- MODE B: EDITOR HUB -->
+                        <div id="registryEditView" class="{% if not request.args.get('edit') %}hidden{% endif %} h-full flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex flex-col text-left">
+                                    <h3 class="text-[10px] font-black text-amber-500 uppercase tracking-widest leading-none">2. Editor Hub</h3>
+                                    <span class="text-[8px] font-bold text-amber-500/60 uppercase italic leading-none mt-1">Elite Node</span>
+                                </div>
+                                <button onclick="closeEditMode()" class="text-[9px] font-black text-slate-500 uppercase hover:text-white transition-all">Cancel</button>
+                            </div>
+
+                            <form action="/update_note" method="POST" enctype="multipart/form-data" class="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2 text-left">
+                                <input type="hidden" name="id" id="col2_edit_id" value="{{ selected_record.id if selected_record else '' }}">
+                                <input type="hidden" name="category_id" id="col2_edit_category_id" value="{{ selected_category.id if selected_category else '' }}">
+                                
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-left shadow-inner">
+                                    <!-- UPDATED LABEL FOR BETTER USABILITY -->
+                                    <label class="text-[8px] font-black text-slate-500 uppercase block tracking-widest">Information Root / Folders (Category)</label>
+                                    <div id="col2_category_display" class="text-[11px] font-black text-indigo-400 uppercase tracking-tighter">GENERAL</div>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-[8px] font-black text-slate-500 uppercase block mb-1 px-1 tracking-widest">Identifier / Title</label>
+                                    <input type="text" name="title" id="col2_edit_title" value="{{ selected_record.title if selected_record else '' }}" required class="input-vault !p-3 !text-xs font-bold shadow-2xl">
+                                </div>
+                                
+                                <!-- ELITE LEDGER BUILDER -->
+                                <div class="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl space-y-3 shadow-xl">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[8px] font-black text-amber-500 uppercase tracking-widest">Elite Ledger Logic</span>
+                                        <span class="text-[7px] text-amber-600 font-bold uppercase italic">Escape: Use || for literal pipe</span>
+                                    </div>
+                                    <div>
+                                        <label class="text-[7px] font-black text-slate-600 uppercase mb-1 block">Column Headers (Use | )</label>
+                                        <input type="text" name="elite_headers" id="col2_elite_headers" value="{{ selected_record.elite_headers if selected_record else '' }}" placeholder="Source | UserID | Password | Comments" class="input-vault !p-2 !text-[10px] !bg-black/40">
+                                    </div>
+                                    <div>
+                                        <label class="text-[7px] font-black text-slate-600 uppercase mb-1 block">Ledger Records (One per line)</label>
+                                        <textarea name="elite_content" id="col2_elite_content" rows="4" placeholder="Microsoft Edge || Browser | meir | ****** | Admin Access" class="input-vault !p-2 !text-[10px] !bg-black/40 font-mono custom-scrollbar">{{ selected_record.elite_content if selected_record else '' }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex flex-col ml-1 mb-1 text-left">
+                                        <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Attach Fragment(s)</label>
+                                        <span class="text-[7px] font-bold text-slate-600 uppercase italic leading-none">Files</span>
+                                    </div>
+                                    <label class="block border border-white/5 bg-white/5 p-3 rounded-xl text-center cursor-pointer hover:border-indigo-500 transition-all shadow-inner">
+                                        <span id="col2_edit_file_label" class="text-[9px] font-black uppercase text-slate-500 tracking-tighter">Select New Files</span>
+                                        <input type="file" name="attachment" multiple class="hidden" onchange="const count = this.files.length; document.getElementById('col2_edit_file_label').innerText = count > 0 ? count + ' Files Prepared' : 'Select New Files'">
+                                    </label>
+                                </div>
+
+                                <div class="text-left">
+                                    <label class="text-[8px] font-black text-slate-500 uppercase block mb-1 text-[8px] font-black text-slate-500 uppercase tracking-widest px-1">Secure Narrative <span class="text-slate-600 italic">-- Notes or Records</span></label>
+                                    <textarea name="content" id="col2_edit_content" rows="8" class="input-vault !p-3 !text-xs font-mono custom-scrollbar shadow-2xl">{{ selected_record.content if selected_record else '' }}</textarea>
+                                </div>
+                                
+                                <button type="submit" class="w-full py-4 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase shadow-2xl sticky bottom-0 active:scale-95 transition-all">Commit Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COL 3: DETAILS -->
+                <div id="step-3-details" class="lg:col-span-5 text-left {% if not selected_record %}mobile-hidden{% endif %}">
+                    <div class="card p-6 md:p-10 flex flex-col h-full shadow-2xl">
+                        {% if selected_record %}
+                            <div class="flex justify-between items-start mb-8 gap-4 text-left">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-3 mb-2 text-left">
+                                        <a href="/notes?cat_id={{ selected_category.id }}" class="lg:hidden h-8 w-8 flex items-center justify-center bg-white/5 rounded-full text-slate-400 shadow-lg"><i class="fas fa-chevron-left text-xs"></i></a>
+                                        <span class="text-[9px] font-black text-indigo-400 uppercase bg-indigo-600/10 px-2 py-0.5 rounded shadow-sm">Security Block #{{ selected_record.id }}</span>
+                                        {% if selected_record.elite_headers %}
+                                            <span class="text-[7px] font-black text-amber-500 uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 shadow-sm"><i class="fas fa-table mr-1"></i> Matrix Mode</span>
+                                        {% endif %}
+                                    </div>
+                                    <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase break-all leading-tight text-left">{{ selected_record.title }}</h2>
+                                </div>
+                                <div class="flex gap-2 text-left">
+                                    <button onclick="enterEditMode('{{ selected_record.id }}', '{{ selected_record.title }}', '{{ selected_record.category_id }}', `{{ selected_record.content }}`, '{{ selected_record.elite_headers }}', `{{ selected_record.elite_content }}`)" class="h-10 w-10 bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 rounded-2xl hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-90"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteRecord('{{ selected_record.id }}')" class="h-10 w-10 bg-rose-900/10 border border-rose-500/20 text-rose-500 rounded-2xl hover:bg-rose-600 hover:text-white transition-all shadow-xl active:scale-90"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 overflow-y-auto custom-scrollbar text-left">
+                                <!-- ELITE MATRIX RENDERER -->
+                                {% if selected_record.elite_headers %}
+                                    <div class="flex flex-col px-2 mb-2 text-left">
+                                        <span class="text-[8px] font-black text-amber-500 uppercase tracking-widest">Elite Ledger</span>
+                                        <span class="text-[7px] font-bold text-slate-600 uppercase italic">Structured Record Matrix</span>
+                                    </div>
+                                    <div class="overflow-x-auto mb-8 shadow-2xl rounded-2xl">
+                                        <table class="elite-matrix">
+                                            <thead>
+                                                <tr>
+                                                    {% set headers = selected_record.elite_headers.replace('||', '§PIPE§').split('|') %}
+                                                    {% for header in headers %}
+                                                        <th>{{ header.replace('§PIPE§', '|').strip() }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in selected_record.elite_content.split('\n') %}
+                                                    {% if row.strip() %}
+                                                        <tr>
+                                                            {% set cells = row.replace('||', '§PIPE§').split('|') %}
+                                                            {% for cell in cells %}
+                                                                <td>{{ cell.replace('§PIPE§', '|').strip() }}</td>
+                                                            {% endfor %}
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
+
+                                <div class="flex flex-col px-2 mb-2 text-left text-left"><span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Secure Narrative</span><span class="text-[7px] font-bold text-slate-600 uppercase italic">Notes or Records</span></div>
+                                <div class="bg-black/40 p-6 rounded-[32px] border border-white/5 mb-6 shadow-inner"><pre class="font-mono text-sm text-white whitespace-pre-wrap leading-relaxed">{{ selected_record.content }}</pre></div>
+                                
+                                {% if attachments %}
+                                    <div class="space-y-2 mt-4 text-left">
+                                        <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest block px-2">Binary Fragments <span class="text-slate-600 italic">-- Files</span></span>
+                                        {% for file in attachments %}
+                                        <div class="flex items-center gap-2 group/row">
+                                            <a href="/download_attachment/{{ file.id }}" class="flex-1 flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl group hover:bg-indigo-600/10 transition-all text-decoration-none shadow-sm">
+                                                <div class="flex items-center gap-3 text-left"><i class="fas fa-file-invoice text-indigo-400"></i><span class="text-xs font-bold text-white">{{ file.file_name }}</span></div>
+                                                <i class="fas fa-download text-slate-600 group-hover:text-white transition-colors"></i>
+                                            </a>
+                                            <button onclick="deleteAttachment('{{ file.id }}', '{{ file.file_name }}')" class="h-14 w-12 flex items-center justify-center bg-rose-950/20 border border-rose-500/10 text-rose-500/40 hover:text-rose-500 hover:bg-rose-900/30 rounded-2xl transition-all shadow-sm" title="Purge Fragment">
+                                                <i class="fas fa-trash-alt text-xs"></i>
+                                            </button>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="h-full flex flex-col items-center justify-center opacity-10 py-20 text-center text-white"><i class="fas fa-lock text-7xl mb-6"></i><p class="text-[10px] font-black uppercase tracking-[0.5em]">Identity Sealed</p></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    
+    <div id="restoreModal" class="fixed inset-0 z-[6000] hidden flex items-center justify-center p-4 modal-overlay">
+        <div class="card w-full max-w-sm p-10 h-auto text-left shadow-2xl">
+            <h2 class="text-xl font-black uppercase italic text-white mb-4 text-left">Restore Heritage</h2>
+            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-8 leading-relaxed font-bold text-left">Import an encrypted Heritage Blob (.json) to synchronize this node.</p>
+            <form action="/import_vault" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <div>
+                    <label class="text-[9px] font-black text-slate-500 uppercase mb-2 block text-left">Select Blob File</label>
+                    <label class="block border border-white/10 bg-black/40 p-6 rounded-2xl text-center cursor-pointer hover:border-indigo-500 transition-all shadow-inner">
+                        <span id="restore_file_label" class="text-[10px] font-black uppercase text-indigo-400">Choose .json fragment</span>
+                        <input type="file" name="heritage_blob" accept=".json" class="hidden" onchange="document.getElementById('restore_file_label').innerText = this.files[0].name">
+                    </label>
+                </div>
+                <div class="flex gap-2 pt-4">
+                    <button type="button" onclick="toggleModal('restoreModal')" class="flex-1 py-4 bg-slate-800 rounded-xl text-xs font-bold text-slate-400 uppercase">Abort</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 rounded-xl text-xs font-black text-white uppercase shadow-lg">Inject Blob</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addCategoryModal" class="fixed inset-0 z-[6000] hidden flex items-center justify-center p-4 modal-overlay">
+        <div class="card w-full max-w-sm p-10 h-auto text-left shadow-2xl">
+            <h2 class="text-xl font-black uppercase italic text-white mb-8 text-left">Initialize Folder</h2>
+            <form action="/add_category" method="POST" class="space-y-6">
+                <div><label class="text-[9px] font-black text-slate-500 uppercase mb-2 block text-left font-black tracking-widest">Folder Name</label><input type="text" name="name" required class="input-vault shadow-xl"></div>
+                <div class="flex gap-2 pt-4">
+                    <button type="button" onclick="toggleModal('addCategoryModal')" class="flex-1 py-4 bg-slate-800 rounded-xl text-xs font-bold text-slate-400 uppercase">Abort</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 rounded-xl text-xs font-black text-white uppercase shadow-xl">Initialize</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="recordModal" class="fixed inset-0 z-[6000] hidden flex items-center justify-center p-4 modal-overlay">
+        <div class="card w-full max-w-xl p-10 h-auto text-left shadow-2xl">
+            <h2 class="text-xl font-black uppercase italic text-white mb-8 text-left">Seal New Record</h2>
+            <form action="/notes" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <input type="hidden" name="action" value="new_record">
+                <div class="text-left"><input type="text" name="title" required placeholder="Identifier / Title" class="input-vault shadow-xl"></div>
+                <div class="text-left"><select name="category_id" class="input-vault shadow-xl font-black uppercase text-[10px] tracking-widest" required>{% for cat in categories %}<option value="{{ cat.id }}" {{ 'selected' if selected_category and selected_category.id == cat.id else '' }}>{{ cat.name }}</option>{% endfor %}</select></div>
+                
+                <div class="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl space-y-3 shadow-xl">
+                    <span class="text-[8px] font-black text-amber-500 uppercase tracking-widest text-left">Elite Ledger (Optional)</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" name="elite_headers" placeholder="Header | Header | Header" class="input-vault !p-3 !text-[10px] !bg-black/40">
+                        <textarea name="elite_content" placeholder="Row | Row | Row" class="input-vault !p-3 !text-[10px] font-mono !bg-black/40 custom-scrollbar"></textarea>
+                    </div>
+                </div>
+
+                <div class="text-left"><textarea name="content" rows="4" placeholder="Secure Narrative..." class="input-vault font-mono text-xs shadow-xl"></textarea></div>
+                <div class="text-left">
+                    <label class="block border border-white/5 bg-white/5 p-4 rounded-xl text-center cursor-pointer hover:border-indigo-500 transition-all shadow-inner">
+                        <span id="new_file_label" class="text-[9px] font-black uppercase text-slate-500 tracking-widest">Attach Binary Fragment(s)</span>
+                        <input type="file" name="attachment" multiple class="hidden" onchange="const count = this.files.length; document.getElementById('new_file_label').innerText = count > 0 ? count + ' Fragments Ready' : 'Attach Binary Fragment(s)'">
+                    </label>
+                </div>
+                <div class="flex gap-2 pt-4">
+                    <button type="button" onclick="toggleModal('recordModal')" class="flex-1 py-4 bg-slate-800 rounded-xl text-xs font-bold text-slate-400 uppercase">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 rounded-xl text-xs font-black text-white uppercase shadow-2xl active:scale-95 transition-all">Seal Block</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        
+        window.onload = function() { 
+            if (window.innerWidth < 1024) {
+                const recId = "{{ selected_record.id if selected_record else '' }}";
+                const catId = "{{ selected_category.id if selected_category else '' }}";
+                if (recId) {
+                    document.getElementById('step-1-folders').classList.add('mobile-hidden');
+                    document.getElementById('step-2-registry').classList.add('mobile-hidden');
+                    document.getElementById('step-3-details').classList.remove('mobile-hidden');
+                } else if (catId) {
+                    document.getElementById('step-1-folders').classList.add('mobile-hidden');
+                    document.getElementById('step-2-registry').classList.remove('mobile-hidden');
+                    document.getElementById('step-3-details').classList.add('mobile-hidden');
+                }
+            }
+            document.getElementById('vault-portal-container').scrollTop = 0;
+        };
+
+        function filterCategories() {
+            const input = document.getElementById('catSearch').value.toUpperCase();
+            const items = document.getElementById('catList').getElementsByTagName('a');
+            for (let i = 0; i < items.length; i++) {
+                const txt = items[i].textContent || items[i].innerText;
+                items[i].style.display = txt.trim().toUpperCase().startsWith(input) ? "" : "none";
+            }
+        }
+
+        function enterEditMode(id, title, catId, content, eliteHeaders, eliteContent) {
+            document.getElementById('col2_edit_id').value = id;
+            document.getElementById('col2_edit_title').value = title;
+            document.getElementById('col2_edit_category_id').value = catId;
+            document.getElementById('col2_edit_content').value = content;
+            
+            document.getElementById('col2_elite_headers').value = eliteHeaders || "";
+            document.getElementById('col2_elite_content').value = eliteContent || "";
+
+            const navLink = document.getElementById('cat-nav-' + catId);
+            document.getElementById('col2_category_display').innerText = navLink ? navLink.innerText.trim().toUpperCase() : "GENERAL";
+            
+            document.getElementById('col2_edit_file_label').innerText = "Select New Files";
+            document.getElementById('registryListView').classList.add('hidden');
+            document.getElementById('registryEditView').classList.remove('hidden');
+            
+            if(window.innerWidth < 1024) {
+                document.getElementById('step-3-details').classList.add('mobile-hidden');
+                document.getElementById('step-2-registry').classList.remove('mobile-hidden');
+            }
+            document.getElementById('col2_edit_content').focus();
+            document.getElementById('vault-portal-container').scrollTop = 0;
+        }
+
+        function closeEditMode() {
+            document.getElementById('registryEditView').classList.add('hidden');
+            document.getElementById('registryListView').classList.remove('hidden');
+            if(window.innerWidth < 1024) {
+                document.getElementById('step-2-registry').classList.add('mobile-hidden');
+                document.getElementById('step-3-details').classList.remove('mobile-hidden');
+            }
+        }
+
+        function deleteRecord(id) {
+            if (confirm('Permanently purge this block from the node? This action is immutable.')) {
+                const form = document.createElement('form');
+                form.method = 'POST'; form.action = '/delete_note';
+                const input = document.createElement('input');
+                input.type = 'hidden'; input.name = 'id'; input.value = id;
+                form.appendChild(input); document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function deleteAttachment(id, name) {
+            if (confirm(`Permanently purge fragment [${name}] from the node?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST'; form.action = '/delete_attachment';
+                const input = document.createElement('input');
+                input.type = 'hidden'; input.name = 'id'; input.value = id;
+                form.appendChild(input); document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!-- templates/aimn-notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA IDENTITY -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Vault">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/000000/safe.png">
+    <meta name="theme-color" content="#020617">
+
+    <title>Vault | Sovereign Heritage Core</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap');
+        
+        html, body { 
+            background-color: #020617; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; overflow: hidden; width: 100%; height: 100%;
+        }
+
+        /* MECHANICAL VAULT FRAME */
+        .vault-frame { position: fixed; z-index: 2000; background: #0f172a; border: 1px solid rgba(212, 175, 55, 0.1); display: flex; align-items: center; justify-content: center; }
+        .frame-top { top: 0; left: 0; right: 0; height: 4.5rem; border-bottom: 2px solid #d4af37; }
+        .frame-bottom { bottom: 0; left: 0; right: 0; height: 4rem; border-top: 1px solid rgba(212, 175, 55, 0.2); }
+        
+        .main-portal { 
+            position: absolute; top: 4.5rem; bottom: 4rem; left: 0; right: 0; 
+            overflow-y: auto; padding: 1rem; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+        }
+
+        .card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 28px; display: flex; flex-direction: column; height: 100%; min-height: 450px; }
+        .list-item { padding: 18px 20px; border-radius: 16px; transition: all 0.2s; font-size: 11px; font-weight: 800; display: block; color: #94a3b8; margin-bottom: 4px; border: 1px solid transparent; text-transform: uppercase; letter-spacing: 0.05em; }
+        .list-item.active { background: #4f46e5; color: white; border-color: #6366f1; }
+        .vault-search { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 10px 14px; font-size: 10px; color: white; width: 100%; margin-bottom: 12px; }
+        .demo-badge { background: linear-gradient(90deg, #d4af37 0%, #f59e0b 100%); color: #000; padding: 2px 10px; border-radius: 20px; font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HUD (ADDED HELP LINK) -->
+    <div class="vault-frame frame-top px-4 md:px-10 flex justify-between">
+        <div class="flex items-center gap-3">
+            <h1 class="text-xs font-black uppercase text-white leading-none">Vault</h1>
+            {% if session['user_id'] == 2 %}<span class="demo-badge">Demo Access</span>{% endif %}
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- THE NEW HELP BUTTON -->
+            <a href="/help" class="text-[9px] font-black uppercase text-slate-500 hover:text-indigo-400 transition-colors flex items-center gap-2">
+                <i class="fas fa-question-circle text-xs"></i> <span class="hidden sm:inline">Guide</span>
+            </a>
+            <div class="h-4 w-px bg-white/5"></div>
+            <a href="/logout" class="bg-rose-900/20 text-rose-500 border border-rose-500/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase">Logout</a>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div class="main-portal custom-scrollbar" id="portal_view">
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-24 lg:pb-0">
+            <!-- Step 1: Folders -->
+            <div class="lg:col-span-3" id="step1">
+                <div class="card p-6">
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">1. Folders</h3>
+                    <input type="text" id="folderSearch" placeholder="Search..." class="vault-search">
+                    <div class="overflow-y-auto" id="folderList">
+                        {% for cat in categories %}
+                        <a href="/notes?cat_id={{ cat.id }}#step2" class="list-item {{ 'active' if selected_category and selected_category.id == cat.id else '' }}">{{ cat.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Notes -->
+            <div class="lg:col-span-3" id="step2">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">2. Notes</h3>
+                    </div>
+                    <input type="text" id="noteSearch" placeholder="Search..." class="vault-search">
+                    <div class="overflow-y-auto">
+                        {% if titles %}{% for t in titles %}
+                        <a href="/notes?cat_id={{ selected_category.id }}&note_id={{ t.id }}#step3" class="list-item {{ 'active' if selected_record and selected_record.id == t.id else '' }}">
+                            <div class="flex justify-between items-center"><span>{{ t.title }}</span>{% if t.file_count > 0 %}<i class="fas fa-paperclip text-[10px] text-indigo-400"></i>{% endif %}</div>
+                        </a>
+                        {% endfor %}{% else %}<div class="py-24 text-center opacity-20 italic text-[10px]">Select Folder...</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Details -->
+            <div class="lg:col-span-6" id="step3">
+                <div class="card p-6 md:p-10 flex flex-col">
+                    {% if selected_record %}
+                        <div class="flex justify-between items-start mb-8 gap-4 text-left">
+                            <div>
+                                <span class="text-[9px] font-black text-indigo-400 uppercase bg-indigo-600/10 px-2 py-0.5 rounded mb-2 inline-block">Block #{{ selected_record.id }}</span>
+                                <h2 class="text-3xl font-black text-white italic tracking-tighter uppercase break-all">{{ selected_record.title }}</h2>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto">
+                            <div class="bg-black/40 p-6 rounded-[32px] border border-white/5 mb-6"><pre class="font-mono text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{{ selected_record.content }}</pre></div>
+                            {% for file in attachments %}
+                            <a href="/download_attachment/{{ file.id }}" class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl mb-2">
+                                <span class="text-xs font-bold text-slate-300">{{ file.file_name }}</span>
+                                <i class="fas fa-download text-slate-500"></i>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}<div class="h-full flex flex-col items-center justify-center opacity-10 text-center py-40"><i class="fas fa-lock text-7xl mb-6"></i><p class="text-[10px] font-black uppercase tracking-[0.5em]">Identity Sealed</p></div>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV (MOBILE) -->
+    <div class="vault-frame frame-bottom flex justify-around items-center px-4">
+        <a href="#step1" class="text-slate-500 flex flex-col items-center gap-1"><i class="fas fa-folder text-lg"></i><span class="text-[8px] font-black uppercase">Folders</span></a>
+        <a href="#step2" class="text-slate-500 flex flex-col items-center gap-1"><i class="fas fa-list text-lg"></i><span class="text-[8px] font-black uppercase">Notes</span></a>
+        <a href="#step3" class="text-slate-500 flex flex-col items-center gap-1"><i class="fas fa-file-alt text-lg"></i><span class="text-[8px] font-black uppercase">Details</span></a>
+    </div>
+
+</body>
+</html>

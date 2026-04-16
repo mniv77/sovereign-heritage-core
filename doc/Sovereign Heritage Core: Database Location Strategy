@@ -1,0 +1,87 @@
+Sovereign Heritage Core: Database Location Strategy
+
+For the commercial version of your Secure Personal Database, the decision between a Mobile-Native model and a PC-Home-Node model is critical for both security and user experience.
+
+1. The Case for the PC (The "Home Node")
+
+In the current Sovereign setup, the PC acts as a 24/7 "Sovereign Node."
+
+Stability (MySQL): MySQL is a server-grade engine. It expects to be "Always On." A PC or a dedicated home server can handle the constant read/write cycles of the Data Pump without the operating system killing the process to save battery.
+
+The Data Pump Integration: Your trading logic requires price checks every few seconds. Mobile operating systems (iOS and Android) will suspend these background scripts almost immediately once the screen is locked.
+
+Storage Capacity: Binary attachments like high-resolution passport scans, family videos, and extensive legal archives consume significant space. PC hardware offers much cheaper and more scalable storage for "Life Data" compared to mobile devices.
+
+2. The Case for the Mobile Device (The "Interface")
+
+While the phone is not an ideal host for a full MySQL server, it is the perfect Access Key.
+
+SQLite vs. MySQL: If data must reside on the phone, we should use SQLite with SQLCipher. It is a single-file, serverless database that is highly optimized for mobile power management.
+
+Biometric Handshake: The phone’s primary value is the Biometric Layer. You use FaceID or TouchID to unlock a "Private Tunnel" to your secure home node.
+
+Portability: It provides instant access to passwords or medical records in an emergency, even if the primary home node is offline, provided a small "Local Sync" copy exists.
+
+3. The "Sovereign" Recommendation: The Hybrid Model
+
+The most profitable and secure way to build this business is a Hybrid Architecture:
+
+Component
+
+Location
+
+Role
+
+Master Database (MySQL)
+
+Home PC
+
+The "Black Box." Always on, running the pump and audit logs.
+
+Encrypted Sync (SQLite)
+
+Mobile
+
+A local, encrypted copy of vital records for offline access.
+
+Succession Logic
+
+Cloud Blob
+
+An encrypted "Heartbeat" that triggers if the Home PC goes dark.
+
+4. Technical Comparison
+
+Feature
+
+PC (MySQL)
+
+Mobile (SQLite/Native)
+
+Background Tasks
+
+Unlimited (24/7 Pump)
+
+Highly Restricted (App Sleep)
+
+Security
+
+Firewall / Physical Access
+
+Biometrics / Encryption Layers
+
+Database Performance
+
+High (Thousands of rows)
+
+Medium (Optimized for small sets)
+
+User Experience
+
+"Set it and forget it"
+
+"Access anywhere, anytime"
+
+Final Verdict
+
+For the Sovereign Heritage Core, the Home PC should remain the "Master Vault." It ensures the integrity of the Data Pump and the long-term preservation of heavy files. The Mobile App should be marketed as the "Universal Key"—the beautiful interface that allows the user to manage their vault from anywhere in the world using their own biometrics.

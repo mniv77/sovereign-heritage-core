@@ -1,0 +1,204 @@
+<!-- templates/ai.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Sovereign AI | The Oracle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background-color: #020617; 
+            color: #f1f5f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+        }
+
+        .ai-bubble {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .user-bubble {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        
+        .btn-nav-utility { transition: all 0.2s ease; }
+        .btn-nav-utility:hover { transform: translateY(-1px); }
+
+        .context-panel {
+            background: linear-gradient(180deg, rgba(79, 70, 229, 0.05) 0%, rgba(15, 23, 42, 0) 100%);
+            border-bottom: 1px solid rgba(79, 70, 229, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950">
+
+    <!-- HEADER / NAVIGATION (SYNCED WITH VAULT HUD) -->
+    <nav class="h-20 bg-slate-950/90 backdrop-blur-md border-b border-white/5 px-6 flex items-center justify-between sticky top-0 z-[1000]">
+        <div class="flex items-center gap-4">
+            <!-- THE BACK BUTTON -->
+            <a href="/notes" class="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all border border-white/5" title="Return to Vault">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="flex items-center gap-3">
+                <div class="h-8 w-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                    <i class="fas fa-sparkles text-sm"></i>
+                </div>
+                <div class="hidden sm:block">
+                    <h1 class="text-xs font-black uppercase tracking-widest text-white leading-none">AI <span class="text-indigo-400">Oracle</span></h1>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Intelligence Layer</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- UTILITY NAVIGATION GROUP -->
+        <div class="flex items-center gap-5">
+            <!-- EXPORT LINK -->
+            <a href="/export_vault" class="btn-nav-utility flex items-center gap-1.5 text-slate-500 hover:text-emerald-400 transition-colors" title="Download Heritage JSON Export">
+                <i class="fas fa-cloud-download-alt text-lg sm:text-xs"></i> 
+                <span class="text-[9px] font-black uppercase tracking-widest hidden md:inline">Export</span>
+            </a>
+
+            <!-- BILLING LINK -->
+            <a href="/billing" class="hidden sm:flex btn-nav-utility items-center gap-2 text-[9px] font-black uppercase text-slate-500 hover:text-amber-500 transition-colors">
+                <i class="fas fa-credit-card text-xs"></i> Billing
+            </a>
+
+            <div class="h-4 w-px bg-white/10 mx-1"></div>
+
+            <div class="flex items-center gap-2">
+                <div class="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Logic Active</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTEXT AWARENESS PANEL -->
+    {% if initial_context %}
+    <div class="context-panel px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="h-10 w-10 bg-indigo-500/10 rounded-xl border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <div class="text-left">
+                <p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-0.5">Analyzing Context</p>
+                <h2 class="text-xs font-black text-white uppercase tracking-tighter italic">
+                    {{ initial_context.split('\n')[0].replace('Record Title: ', '') }}
+                </h2>
+            </div>
+        </div>
+        <!-- VISUAL FILE INDICATOR -->
+        <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg">
+            <i class="fas fa-paperclip text-[10px] text-emerald-400"></i>
+            <span class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Fragments Linked</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- CHAT AREA -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar" id="aiChatWindow">
+        <!-- Initial Message -->
+        <div class="flex gap-4 max-w-[90%] text-left">
+            <div class="h-8 w-8 shrink-0 bg-indigo-600/20 rounded-xl flex items-center justify-center text-[10px] text-indigo-400 font-black">AI</div>
+            <div class="ai-bubble p-5 rounded-3xl text-sm text-slate-300 leading-relaxed">
+                Welcome to the Sovereign Oracle. I am the transient logic layer of your vault. How may I assist your analysis today?
+            </div>
+        </div>
+    </main>
+
+    <!-- INPUT DOCK -->
+    <div class="p-6 bg-slate-950/90 backdrop-blur-xl border-t border-white/5">
+        <div class="max-w-3xl mx-auto">
+            <div class="relative">
+                <input type="text" id="aiInput" placeholder="Ask the Oracle..." 
+                       class="w-full h-16 bg-slate-900 border border-white/5 rounded-2xl px-6 pr-16 text-sm font-medium focus:border-indigo-500/50 outline-none transition-all shadow-2xl">
+                <button id="aiSendBtn" onclick="sendAIQuery()" class="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-indigo-600 text-white rounded-xl hover:bg-indigo-500 transition-all flex items-center justify-center">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <p class="text-[8px] text-slate-600 font-bold uppercase text-center mt-4 tracking-[0.3em]">Transient Logic Layer • Not Stored on Node</p>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('aiChatWindow');
+        const input = document.getElementById('aiInput');
+        const initialContext = `{{ initial_context | safe }}`;
+
+        function addChatMessage(role, text, id = null) {
+            const msg = document.createElement('div');
+            msg.className = `flex gap-4 ${role === 'User' ? 'justify-end' : ''} max-w-full animate-in fade-in slide-in-from-bottom-2 duration-300 text-left`;
+            
+            const innerHtml = role === 'AI' ? 
+                `<div class="h-8 w-8 shrink-0 bg-indigo-600/20 rounded-xl flex items-center justify-center text-[10px] text-indigo-400 font-black">AI</div>
+                 <div id="${id || ''}" class="ai-bubble p-5 rounded-3xl text-sm text-slate-300 leading-relaxed max-w-[85%]">${text}</div>` :
+                `<div class="user-bubble p-5 rounded-3xl text-sm text-white leading-relaxed max-w-[85%]">${text}</div>`;
+            
+            msg.innerHTML = innerHtml;
+            chatWindow.appendChild(msg);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        async function sendAIQuery() {
+            const prompt = input.value.trim();
+            if (!prompt) return;
+
+            addChatMessage('User', prompt);
+            input.value = '';
+            
+            const loadingId = 'ai_loading_' + Date.now();
+            addChatMessage('AI', '<i class="fas fa-circle-notch animate-spin mr-2"></i> Logic synthesizing...', loadingId);
+
+            try {
+                const response = await fetch('/api/ai_query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, context: initialContext })
+                });
+                const data = await response.json();
+                
+                const loadingBubble = document.getElementById(loadingId);
+                if (loadingBubble) {
+                    loadingBubble.innerHTML = data.response;
+                }
+            } catch (err) {
+                const loadingBubble = document.getElementById(loadingId);
+                if (loadingBubble) {
+                    loadingBubble.innerText = "Connection lost. AI Oracle offline.";
+                    loadingBubble.classList.add('text-rose-400');
+                }
+            }
+        }
+
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendAIQuery(); });
+
+        // Auto-run if context exists
+        window.onload = () => {
+            if (initialContext) {
+                const title = initialContext.split('\n')[0].replace('Record Title: ', '');
+                addChatMessage('AI', `I have successfully loaded the context for **${title}**. All associated fragments and record text are active in my logic. How would you like me to analyze this record?`);
+            }
+        };
+    </script>
+</body>
+</html>

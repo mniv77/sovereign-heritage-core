@@ -1,0 +1,41 @@
+Sovereign Heritage Core
+
+Your Secure Personal Database
+
+This is the standalone Sovereign Heritage Core project root. It provides high-grade encryption services and legacy succession protocols as a decoupled microservice.
+
+📂 Directory Structure
+
+/core: Compiled libraries and encryption wrappers.
+
+/vault_backups: Encrypted "Blobs" for disaster recovery.
+
+/config: System-level settings and translation layers.
+
+/logs: Security audits and heartbeat logs.
+
+/templates: HTML interfaces for the Vault Explorer.
+
+🚀 Service Architecture
+
+The core runs as an independent Flask service on Port 5002. It exposes two primary endpoints for data management:
+
+POST /seal: Takes plain text and returns an AES-256-GCM encrypted blob.
+
+POST /open: Takes an encrypted blob and returns the original text (requires Master Key).
+
+🛡️ Security Protocol
+
+Standard: AES-256-GCM (Authenticated Encryption).
+
+Derivation: PBKDF2 with 100,000 iterations.
+
+Philosophy: Zero-Knowledge. The server hosting the database cannot read the contents without the user's volatile Master Password.
+
+🔗 Commercial Integration
+
+To use this in the AiMN Trade Final project:
+
+Ensure the sovereign_heritage_core.py library is reachable.
+
+Point your encryption requests to http://localhost:5002/seal.

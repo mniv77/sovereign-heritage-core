@@ -1,0 +1,361 @@
+<!-- templates/aimn-notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Heritage Core | Professional Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
+        body { background-color: #020617; color: #f1f5f9; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
+        
+        /* 1-INCH MECHANICAL VAULT FRAME */
+        .vault-frame { position: fixed; z-index: 2000; background: #0f172a; border: 1px solid rgba(212, 175, 55, 0.2); display: flex; align-items: center; justify-content: center; pointer-events: auto; }
+        .frame-top { top: 0; left: 0; right: 0; height: 4.5rem; border-bottom: 2px solid #d4af37; box-shadow: 0 4px 30px rgba(0,0,0,0.7); }
+        .frame-bottom { bottom: 0; left: 0; right: 0; height: 3rem; border-top: 1px solid rgba(212, 175, 55, 0.3); background: #020617; }
+        .frame-left { top: 4.5rem; bottom: 3rem; left: 0; width: 4.5rem; border-right: 1px solid rgba(212, 175, 55, 0.3); flex-direction: column; padding-top: 1.5rem; }
+        .frame-right { top: 4.5rem; bottom: 3rem; right: 0; width: 4.5rem; border-left: 1px solid rgba(212, 175, 55, 0.3); flex-direction: column; padding-top: 1.5rem; }
+
+        /* ADS FRAME - LUXURY CUBICS */
+        .ad-cubic { 
+            width: 3.2rem; height: 3.2rem; margin-bottom: 1.2rem; 
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 12px; filter: grayscale(100%) opacity(0.3); transition: all 0.3s ease; cursor: pointer; 
+        }
+        .ad-cubic:hover { filter: grayscale(0%) opacity(1); border-color: #d4af37; background: rgba(212, 175, 55, 0.1); transform: scale(1.05); }
+
+        /* LOGO ANIMATION */
+        .vault-wheel { transform-origin: center; animation: wheel-rotate 25s infinite linear; }
+        @keyframes wheel-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .main-portal { 
+            position: absolute; 
+            top: 4.5rem; 
+            bottom: 3rem; 
+            left: 4.5rem; 
+            right: 4.5rem; 
+            overflow: hidden; 
+            padding: 2rem; 
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); 
+        }
+        
+        /* VAULT CARD - FIXED HEIGHT FOR MOVABLE LISTS */
+        .vault-card { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 24px; 
+            display: flex; 
+            flex-direction: column; 
+            height: calc(100vh - 12.5rem); 
+            min-height: 400px;
+            overflow: hidden;
+        }
+        
+        /* MOVABLE LIST LOGIC */
+        .scrollable-list { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding-right: 8px; 
+            margin-top: 5px;
+        }
+
+        .list-item { padding: 14px 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; display: block; }
+        .list-item:hover { background: rgba(255,255,255,0.05); color: #818cf8; }
+        .list-item.active { background: #4f46e5; color: white; border-color: #6366f1; }
+        
+        .action-icon { opacity: 0; transition: opacity 0.2s; }
+        .group:hover .action-icon { opacity: 1; }
+        
+        .search-bar { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px; color: white; font-size: 10px; width: 100%; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; }
+        .search-bar:focus { border-color: #d4af37; outline: none; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
+        input, textarea { background-color: #0f172a; border: 1px solid #1e293b; color: white !important; padding: 12px; border-radius: 12px; font-size: 0.8rem; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-950">
+
+    <!-- TOP HUD FRAME -->
+    <div class="vault-frame frame-top px-10 flex justify-between">
+        <div class="flex items-center gap-5">
+            <svg width="48" height="48" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="v_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#d4af37" />
+                        <stop offset="100%" style="stop-color:#a67c00" />
+                    </linearGradient>
+                </defs>
+                <path d="M100 40L145 66L145 118" stroke="url(#v_grad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+                <path d="M153 133L100 163L47 133" stroke="url(#v_grad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+                <path d="M55 118L55 66L100 40" stroke="url(#v_grad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+                <g class="vault-wheel">
+                    <circle cx="100" cy="100" r="28" stroke="url(#v_grad)" stroke-width="6" fill="rgba(212,175,55,0.1)"/>
+                    <circle cx="100" cy="100" r="8" fill="url(#v_grad)"/>
+                    <rect x="96" y="55" width="8" height="18" fill="url(#v_grad)" rx="2"/>
+                    <rect x="96" y="127" width="8" height="18" fill="url(#v_grad)" rx="2"/>
+                    <rect x="127" y="96" width="18" height="8" fill="url(#v_grad)" rx="2"/>
+                    <rect x="55" y="96" width="18" height="8" fill="url(#v_grad)" rx="2"/>
+                </g>
+            </svg>
+            <div class="text-left">
+                <h1 class="text-[12px] font-black uppercase tracking-[0.4em] text-white leading-none">Sovereign <span class="text-amber-500">Heritage Core</span></h1>
+                <p class="text-[7px] font-bold text-slate-500 uppercase mt-1">Your Secure Personal Database</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-right pr-4 border-r border-white/5">
+                <p class="text-[8px] font-black text-slate-600 uppercase tracking-widest leading-none">Identity</p>
+                <p class="text-[10px] font-bold text-amber-500">meir_niv_001</p>
+            </div>
+            <button onclick="toggleModal('catModal')" class="bg-amber-500 text-black px-5 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">New Category</button>
+        </div>
+    </div>
+
+    <!-- SIDE ADS FRAMES (RESTORED) -->
+    <div class="vault-frame frame-left">
+        <div class="ad-cubic" title="Rolex Registry"><i class="fas fa-crown text-amber-500/60 text-lg"></i></div>
+        <div class="ad-cubic" title="Patek Philippe"><i class="fas fa-clock text-blue-400/60 text-lg"></i></div>
+        <div class="ad-cubic" title="Gulfstream Access"><i class="fas fa-plane text-slate-400 text-lg"></i></div>
+    </div>
+    <div class="vault-frame frame-right">
+        <div class="ad-cubic" title="Ferrari Registry"><i class="fas fa-horse text-rose-500/60 text-lg"></i></div>
+        <div class="ad-cubic" title="Cartier Selection"><i class="fas fa-gem text-indigo-400/60 text-lg"></i></div>
+        <div class="ad-cubic" title="Sotheby's Catalog"><i class="fas fa-gavel text-amber-200/60 text-lg"></i></div>
+    </div>
+
+    <!-- BOTTOM STATUS FRAME -->
+    <div class="vault-frame frame-bottom px-10 flex justify-between">
+        <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Sovereign Node Secured</span>
+        <p class="text-[8px] text-slate-700 font-bold uppercase tracking-[0.4em]">Commercial Build 3.1</p>
+    </div>
+
+    <!-- MAIN PORTAL -->
+    <div class="main-portal custom-scrollbar">
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-6 h-full items-start">
+            
+            <!-- COL 1: CATEGORIES (MOVABLE & SEARCHABLE) -->
+            <div class="md:col-span-3">
+                <div class="vault-card p-5">
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 px-2">1. System Folders</h3>
+                    <!-- Searchable Category Input -->
+                    <input type="text" id="catSearch" onkeyup="filterList('catSearch', 'catList')" placeholder="Search Folders..." class="search-bar">
+                    
+                    <!-- Movable (Scrollable) List -->
+                    <div class="scrollable-list custom-scrollbar" id="catList">
+                        {% for cat in categories %}
+                        <div class="group flex items-center mb-1">
+                            <a href="/notes?cat_id={{ cat.id }}" class="list-item flex-grow mb-0 {{ 'active' if selected_category and selected_category.id == cat.id else 'text-slate-400' }}">
+                                {{ cat.name }}
+                            </a>
+                            <div class="flex gap-1 action-icon ml-1">
+                                <button onclick="openRenameModal('cat', '{{ cat.id }}', '{{ cat.name }}')" class="h-8 w-8 flex items-center justify-center bg-slate-900 rounded-lg text-slate-500 hover:text-indigo-400 border border-white/5"><i class="fas fa-pen text-[9px]"></i></button>
+                                {% if cat.id != 1 %}
+                                <form action="/archive_category" method="POST" onsubmit="return confirm('Archive whole folder: {{ cat.name }}?')">
+                                    <input type="hidden" name="category_id" value="{{ cat.id }}">
+                                    <button type="submit" class="h-8 w-8 flex items-center justify-center bg-slate-900 rounded-lg text-slate-600 hover:text-amber-500 border border-white/5"><i class="fas fa-archive text-[9px]"></i></button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- COL 2: TITLES (MOVABLE & SEARCHABLE) -->
+            <div class="md:col-span-4">
+                <div class="vault-card p-5">
+                    <div class="flex justify-between items-center mb-4 px-2">
+                        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">2. Registry Titles</h3>
+                        {% if selected_category %}
+                        <button onclick="openNewRecordModal('{{ selected_category.name }}')" class="bg-indigo-500/20 text-indigo-400 h-8 w-8 rounded-lg hover:bg-indigo-500 transition flex items-center justify-center">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <input type="text" id="titleSearch" onkeyup="filterList('titleSearch', 'titleList')" placeholder="Search Fragments..." class="search-bar">
+                    <div class="scrollable-list custom-scrollbar" id="titleList">
+                        {% if titles %}
+                            {% for t in titles %}
+                            <div class="group flex items-center mb-1">
+                                <a href="/notes?cat_id={{ selected_category.id }}&note_id={{ t.id }}" class="list-item flex-grow mb-0 {{ 'active' if selected_record and selected_record.id == t.id else 'text-slate-300' }}">{{ t.display_title }}</a>
+                                <div class="flex gap-1 action-icon ml-1">
+                                    <button onclick="openRenameModal('title', '{{ t.id }}', '{{ t.display_title }}', '{{ selected_category.id }}')" class="h-8 w-8 flex items-center justify-center bg-slate-900 rounded-lg text-slate-500 hover:text-emerald-400 border border-white/5" title="Rename Fragment"><i class="fas fa-pen text-[9px]"></i></button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="py-24 text-center opacity-20 italic text-[10px] uppercase">Select Folder.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- COL 3: CONTENT VIEW -->
+            <div class="md:col-span-5">
+                <div class="vault-card p-10 flex flex-col text-left">
+                    {% if selected_record %}
+                        <div class="flex justify-between items-start mb-10">
+                            <div class="text-left">
+                                <span class="text-[9px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded font-black uppercase tracking-widest mb-2 inline-block">SECURITY BLOCK #{{ selected_record.id }}</span>
+                                <h2 class="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">{{ selected_record.title }}</h2>
+                            </div>
+                            <div class="flex gap-3">
+                                <form action="/add_attachment" method="POST" enctype="multipart/form-data" class="contents">
+                                    <input type="hidden" name="note_id" value="{{ selected_record.id }}">
+                                    <input type="hidden" name="cat_id" value="{{ selected_category.id }}">
+                                    <input type="file" name="attachments" id="quickAttachInput" multiple class="hidden" onchange="this.form.submit()">
+                                    <button type="button" onclick="document.getElementById('quickAttachInput').click()" class="h-12 w-12 flex items-center justify-center bg-indigo-600/20 rounded-2xl text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600 hover:text-white transition shadow-lg"><i class="fas fa-paperclip"></i></button>
+                                </form>
+                                <button onclick="openEditRecordModal('{{ selected_record.id }}', '{{ selected_record.title }}', '{{ selected_record.category_id }}', '{{ selected_category.name }}')" class="h-12 w-12 flex items-center justify-center bg-slate-800 rounded-2xl text-slate-400 hover:text-white transition shadow-lg"><i class="fas fa-edit"></i></button>
+                            </div>
+                        </div>
+                        <div id="recordContentBuffer" class="hidden">{{ selected_record.content }}</div>
+                        <div class="bg-black/40 p-8 rounded-3xl border border-white/5 flex-grow overflow-auto mb-6 custom-scrollbar"><pre class="mono text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">{{ selected_record.content }}</pre></div>
+                    {% else %}
+                        <div class="h-full flex flex-col items-center justify-center opacity-10">
+                            <i class="fas fa-fingerprint text-7xl mb-8"></i><p class="text-sm font-black uppercase tracking-widest">Vault Restricted</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="renameModal" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden flex items-center justify-center p-4 z-[3000]">
+        <div class="vault-card w-full max-w-sm p-10 border-indigo-500/20 h-auto min-h-0">
+            <h2 id="renameModalTitle" class="text-xl font-black uppercase italic text-white mb-8">Modify Identity</h2>
+            <form id="renameForm" method="POST">
+                <input type="hidden" name="category_id" id="rename_cat_id">
+                <input type="hidden" name="note_id" id="rename_note_id">
+                <input type="hidden" name="cat_id" id="rename_current_cat_id">
+                <div class="mb-6">
+                    <label id="renameLabel" class="text-[10px] font-black text-slate-500 uppercase mb-2 block text-left">New Label</label>
+                    <input type="text" name="new_name" id="rename_input" required class="bg-slate-900 border-slate-800 rounded-lg p-3 w-full text-white">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="toggleModal('renameModal')" class="flex-1 py-4 bg-slate-800 rounded-xl text-xs font-bold text-slate-400">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 rounded-xl text-xs font-black">Commit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: SEAL NEW FRAGMENT / EDIT RECORD -->
+    <div id="recordModal" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden flex items-center justify-center p-4 z-[3000]">
+        <div class="vault-card w-full max-w-lg p-10 border-indigo-500/20 h-auto min-h-0">
+            <h2 id="recordModalTitle" class="text-xl font-black uppercase italic text-white mb-4">Seal New Registry Fragment</h2>
+            
+            <!-- Category Indicator Display -->
+            <div id="modalCategoryDisplay" class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 mb-6 flex items-center justify-between">
+                <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Active Folder</span>
+                <span id="modalCatName" class="text-[11px] font-bold text-white uppercase italic">General</span>
+            </div>
+
+            <form action="/notes" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <input type="hidden" name="action" id="recordAction" value="new_record">
+                <input type="hidden" name="note_id" id="edit_note_id">
+                <input type="hidden" name="category_id" id="edit_cat_id" value="{{ selected_category.id if selected_category else '' }}">
+                
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Fragment Identifier</label>
+                    <input type="text" name="title" id="edit_title" required placeholder="Name this entry...">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Secure Content</label>
+                    <textarea name="content" id="edit_content" rows="10" required class="mono text-xs" placeholder="Sensitive data..."></textarea>
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Binary Registry (Attach Files)</label>
+                    <input type="file" name="attachments" multiple class="text-xs p-4 border-2 border-dashed border-white/5 rounded-xl text-slate-500">
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="toggleModal('recordModal')" class="flex-1 py-4 bg-slate-800 rounded-xl text-xs font-bold text-slate-400">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 rounded-xl text-xs font-black">Seal Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="catModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4 z-[3000]">
+        <div class="vault-card w-full max-w-sm p-10 border-amber-500/20 h-auto min-h-0">
+            <h2 class="text-xl font-black uppercase italic text-white mb-8">Provision Folder</h2>
+            <form action="/notes" method="POST">
+                <input type="hidden" name="action" value="new_category">
+                <div class="mb-6"><label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Name</label><input type="text" name="name" required class="bg-slate-900 border-slate-800 rounded-lg p-3 w-full text-white"></div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="toggleModal('catModal')" class="flex-1 py-4 bg-slate-800 rounded-xl text-xs font-bold text-slate-400">Abort</button>
+                    <button type="submit" class="flex-1 py-4 bg-amber-500 rounded-xl text-xs font-black text-black">Finalize</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        
+        function filterList(inputId, listId) {
+            let input = document.getElementById(inputId).value.toUpperCase();
+            let items = document.getElementById(listId).children;
+            for (let i = 0; i < items.length; i++) {
+                let txt = items[i].textContent || items[i].innerText;
+                if (txt.toUpperCase().indexOf(input) > -1) {
+                    items[i].style.display = items[i].tagName === 'DIV' ? "flex" : "block";
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+        }
+
+        function openRenameModal(type, id, name, parentId = '') {
+            const form = document.getElementById('renameForm');
+            const title = document.getElementById('renameModalTitle');
+            const input = document.getElementById('rename_input');
+            if (type === 'cat') {
+                form.action = '/rename_category';
+                title.innerText = "Modify Folder Identity";
+                document.getElementById('rename_cat_id').value = id;
+                input.name = "new_name";
+            } else {
+                form.action = '/rename_title';
+                title.innerText = "Modify Fragment Identity";
+                document.getElementById('rename_note_id').value = id;
+                document.getElementById('rename_current_cat_id').value = parentId;
+                input.name = "new_title";
+            }
+            input.value = name;
+            toggleModal('renameModal');
+        }
+
+        function openNewRecordModal(catName) {
+            document.getElementById('recordModalTitle').innerText = "Seal New Registry Fragment";
+            document.getElementById('recordAction').value = "new_record";
+            document.getElementById('edit_title').value = "";
+            document.getElementById('edit_content').value = "";
+            document.getElementById('modalCatName').innerText = catName || 'General';
+            toggleModal('recordModal');
+        }
+
+        function openEditRecordModal(id, title, catId, catName) {
+            document.getElementById('recordModalTitle').innerText = "Modify Registry Fragment";
+            document.getElementById('recordAction').value = "update_record";
+            document.getElementById('edit_note_id').value = id;
+            document.getElementById('edit_title').value = title;
+            document.getElementById('edit_cat_id').value = catId;
+            document.getElementById('modalCatName').innerText = catName || 'General';
+            document.getElementById('edit_content').value = document.getElementById('recordContentBuffer').innerText;
+            toggleModal('recordModal');
+        }
+    </script>
+</body>
+</html>

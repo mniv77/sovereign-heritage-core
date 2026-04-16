@@ -1,0 +1,84 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA PROTOCOLS -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sovereign">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/000000/safe.png">
+
+    <title>Sovereign Heritage Core | Master Node</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .nav-arrow { animation: bounceRight 1s infinite; }
+        @keyframes bounceRight { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- HUD FRAME -->
+    <nav class="h-20 bg-slate-900 border-b border-amber-500/30 px-6 flex items-center justify-between sticky top-0 z-[1000]">
+        <div class="flex items-center gap-4">
+            <div class="h-10 w-10 bg-amber-500 rounded-xl flex items-center justify-center text-black shadow-lg shadow-amber-500/20">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div>
+                <h1 class="text-xs font-black uppercase tracking-widest text-white">Sovereign <span class="text-amber-500">Node</span></h1>
+                <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">{{ user_email }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- IMPROVED HELP LINK -->
+            <a href="/help" class="text-[10px] font-black text-slate-400 hover:text-amber-500 transition-colors uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-question-circle"></i> <span class="hidden sm:inline">Guide</span>
+            </a>
+            <a href="/logout" class="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[9px] font-black uppercase text-slate-400 hover:bg-rose-900/20 hover:text-rose-500 transition-all">Logout</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 p-6 space-y-6 max-w-lg mx-auto w-full">
+        <!-- MOBILE ONBOARDING CARD -->
+        <div class="glass p-8 rounded-[40px] text-center space-y-6 shadow-2xl border-white/5">
+            <div class="bg-amber-500/10 h-20 w-20 rounded-full mx-auto flex items-center justify-center border border-amber-500/20">
+                <i class="fas fa-mobile-alt text-amber-500 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-black italic uppercase leading-none tracking-tighter">Your Life, <span class="text-amber-500">Sealed.</span></h2>
+            <p class="text-xs text-slate-400 leading-relaxed uppercase font-bold tracking-widest">
+                Add this page to your Home Screen for one-tap vault access with biometric locking.
+            </p>
+            <a href="/notes" class="w-full bg-amber-500 hover:bg-amber-400 text-black py-5 rounded-2xl flex items-center justify-center gap-4 group transition-all shadow-2xl">
+                <span class="font-black uppercase text-sm tracking-[0.2em]">Open Your Vault</span>
+                <i class="fas fa-arrow-right nav-arrow"></i>
+            </a>
+        </div>
+
+        <!-- COMMERCIAL MODULES -->
+        <div class="grid grid-cols-2 gap-4">
+            <a href="/help" class="glass p-6 rounded-3xl text-left border-indigo-500/10 hover:border-indigo-500/30 transition-all block">
+                <i class="fas fa-book-open text-indigo-500 mb-3"></i>
+                <span class="block text-[9px] font-black text-slate-500 uppercase mb-1">User Manual</span>
+                <span class="text-sm font-black text-white uppercase">Guide</span>
+            </a>
+            <div class="glass p-6 rounded-3xl text-left border-emerald-500/10">
+                <i class="fas fa-credit-card text-emerald-500 mb-3"></i>
+                <span class="block text-[9px] font-black text-slate-500 uppercase mb-1">Pro Status</span>
+                <span class="text-sm font-black text-white uppercase">Verified</span>
+            </div>
+        </div>
+
+        <footer class="text-center pt-10 pb-10 opacity-30">
+            <p class="text-[8px] text-slate-500 font-bold uppercase tracking-[0.4em]">Sovereign Heritage Core • Enterprise 4.0</p>
+        </footer>
+    </main>
+
+</body>
+</html>

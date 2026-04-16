@@ -1,0 +1,151 @@
+<!-- mobile_app_design.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sovereign Mobile Gallery</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide-react@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { background-color: #020617; color: #f1f5f9; font-family: 'Inter', sans-serif; margin: 0; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); }
+        .loader { border-top-color: #6366f1; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Shield, Database, LayoutGrid, Play, Image, Download, ArrowLeft, Plus, RefreshCw, AlertCircle, FileText } = LucideReact;
+
+        const App = () => {
+            const [view, setView] = useState('dashboard');
+            const [selectedMedia, setSelectedMedia] = useState(null);
+            const [galleryItems, setGalleryItems] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+
+            // Fetch Real Data from MySQL API
+            const fetchVaultData = async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                    const response = await fetch('/api/vault_data');
+                    if (!response.ok) throw new Error("PC Node Handshake Failed");
+                    const data = await response.json();
+                    setGalleryItems(data.records || []);
+                } catch (err) {
+                    setError("PC Node Offline or API missing.");
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            useEffect(() => {
+                if (view === 'gallery') fetchVaultData();
+            }, [view]);
+
+            const Header = ({ title, showBack }) => (
+                <div className="p-6 bg-slate-950/90 border-b border-white/5 sticky top-0 z-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        {showBack ? (
+                            <button onClick={() => setView('gallery')} className="text-slate-400 p-2 bg-white/5 rounded-lg"><ArrowLeft size={20}/></button>
+                        ) : (
+                            <div className="p-2 bg-indigo-600/20 rounded-lg"><Shield className="text-indigo-500" size={24}/></div>
+                        )}
+                        <div>
+                            <h1 className="text-sm font-black uppercase tracking-widest italic">{title}</h1>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <span className="text-[8px] font-black text-slate-500 uppercase">Sovereign Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={fetchVaultData} className="text-slate-500 hover:text-white"><RefreshCw size={18} className={loading ? "animate-spin" : ""} /></button>
+                </div>
+            );
+
+            const Dashboard = () => (
+                <div className="p-8 space-y-8 animate-in fade-in duration-500">
+                    <div className="bg-indigo-600 p-8 rounded-[40px] shadow-2xl relative overflow-hidden group active:scale-95 transition-all" onClick={() => setView('gallery')}>
+                        <div className="relative z-10">
+                            <Database className="text-indigo-200 mb-4" size={32} />
+                            <h2 className="text-2xl font-black italic uppercase text-white leading-none">Access Vault</h2>
+                            <p className="text-[10px] font-bold text-indigo-200 uppercase tracking-widest mt-2 opacity-80">Synchronizing Local Node</p>
+                        </div>
+                        <div className="absolute -right-10 -bottom-10 opacity-10"><Shield size={180} /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="glass p-6 rounded-[32px] border-white/5">
+                            <RefreshCw className="text-emerald-400 mb-3" size={20} />
+                            <span className="block text-[9px] font-black text-slate-500 uppercase leading-none mb-1">Status</span>
+                            <span className="text-lg font-black text-white italic uppercase">Synced</span>
+                        </div>
+                        <div className="glass p-6 rounded-[32px] border-white/5">
+                            <Plus className="text-indigo-400 mb-3" size={20} />
+                            <span className="block text-[9px] font-black text-slate-500 uppercase leading-none mb-1">Action</span>
+                            <span className="text-lg font-black text-white italic uppercase">Create</span>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const GalleryGrid = () => (
+                <div className="p-4 space-y-4">
+                    {loading && <div className="py-20 text-center opacity-40"><div className="loader rounded-full border-2 h-8 w-8 mx-auto mb-4"></div><span className="text-[10px] font-black uppercase">Opening Vault...</span></div>}
+                    {error && <div className="bg-rose-500/10 p-6 rounded-3xl text-center"><AlertCircle className="text-rose-500 mx-auto mb-3" /><p className="text-xs font-bold text-rose-200 uppercase">{error}</p></div>}
+                    <div className="grid grid-cols-2 gap-4">
+                        {galleryItems.map(item => (
+                            <div key={item.id} onClick={() => { setSelectedMedia(item); setView('detail'); }} className="glass rounded-[32px] p-5 flex flex-col items-center justify-center aspect-square border-white/5 active:scale-95 transition-all shadow-xl">
+                                <div className="p-4 bg-white/5 rounded-2xl mb-4">
+                                    {item.media_type === 'image' ? <Image className="text-indigo-400" size={32}/> : (item.media_type === 'video' ? <Play className="text-rose-400" size={32}/> : <FileText className="text-slate-400" size={32}/>)}
+                                </div>
+                                <span className="text-[11px] font-black uppercase text-white tracking-tighter text-center line-clamp-1">{item.title}</span>
+                                <span className="text-[8px] text-slate-500 font-bold uppercase mt-1">ID #{item.id}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            const MediaDetail = () => (
+                <div className="p-6 space-y-6">
+                    <div className="bg-black aspect-square rounded-[40px] flex items-center justify-center border border-white/10 overflow-hidden shadow-2xl">
+                        {selectedMedia?.media_type === 'image' ? <img src={`/view_media/${selectedMedia.id}`} className="w-full h-full object-contain" /> : (selectedMedia?.media_type === 'video' ? <video controls className="w-full h-full"><source src={`/view_media/${selectedMedia.id}`} type="video/mp4" /></video> : <div className="text-slate-600 flex flex-col items-center"><FileText size={64}/><span className="text-[10px] font-black mt-4 uppercase">Binary Fragment</span></div>)}
+                    </div>
+                    <div className="space-y-2 px-2 text-left">
+                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Identifier / Title</span>
+                        <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-tight">{selectedMedia?.title}</h2>
+                        <div className="bg-white/5 p-5 rounded-2xl border border-white/5 mt-4">
+                            <p className="text-xs text-slate-400 font-mono leading-relaxed whitespace-pre-wrap">{selectedMedia?.content || "No secure text data found."}</p>
+                        </div>
+                    </div>
+                    <a href={`/download_attachment/${selectedMedia?.id}`} className="w-full py-5 bg-indigo-600 rounded-[24px] flex items-center justify-center gap-3 text-white font-black uppercase text-xs tracking-widest shadow-2xl active:scale-95 transition-all"><Download size={18}/> Download Binary</a>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-slate-950 pb-32">
+                    <Header title={view === 'detail' ? 'Fragment' : 'Sovereign Gallery'} showBack={view === 'detail' || view === 'gallery'} />
+                    <main>{view === 'dashboard' ? <Dashboard /> : (view === 'gallery' ? <GalleryGrid /> : <MediaDetail />)}</main>
+                    <nav className="fixed bottom-6 left-6 right-6 z-50"><div className="glass rounded-[32px] p-3 flex justify-around shadow-2xl border border-white/10">
+                        <button onClick={() => setView('dashboard')} className={`p-4 rounded-2xl transition-all ${view==='dashboard'?'bg-indigo-600 text-white shadow-lg':'text-slate-500'}`}><Shield size={22}/></button>
+                        <button onClick={() => setView('gallery')} className={`p-4 rounded-2xl transition-all ${view==='gallery'?'bg-indigo-600 text-white shadow-lg':'text-slate-500'}`}><LayoutGrid size={22}/></button>
+                        <button className="p-4 text-slate-500"><Plus size={22}/></button>
+                    </div></nav>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

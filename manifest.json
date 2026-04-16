@@ -1,0 +1,33 @@
+{
+  "id": "/notes",
+  "short_name": "Vault",
+  "name": "Sovereign Vault",
+  "description": "Secure Personal Database",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluency/180/000000/safe.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    },
+    {
+      "src": "https://img.icons8.com/fluency/192/000000/safe.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://img.icons8.com/fluency/512/000000/safe.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/notes",
+  "background_color": "#020617",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "theme_color": "#020617"
+}
