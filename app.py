@@ -17,14 +17,7 @@ from datetime import datetime
 VAULT_VERSION = "v7.6.1-ELITE"
 
 # --- CONFIGURATION LAYER ---
-try:
-    import db_config as config
-except ImportError:
-    class config:
-        DB_HOST = "MeirNiv.mysql.pythonanywhere-services.com"
-        DB_USER = "MeirNiv"
-        DB_PASSWORD = "mayyam28"
-        DB_NAME = "MeirNiv$v"
+import db_config as config
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-this")
@@ -38,7 +31,7 @@ def get_db_connection(use_dict=True):
             password=config.DB_PASSWORD,
             database=config.DB_NAME,
             port=getattr(config, "DB_PORT", 3306),
-            autocommit=Truehost=config.DB_HOST,
+            autocommit=True
       )
         return conn, conn.cursor(dictionary=use_dict)
     except Exception as e:
