@@ -1,0 +1,311 @@
+<!-- templates/mn-notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sovereign Heritage Core | Vault Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
+
+        :root {
+            --obsidian: #020617;
+            --heritage-white: #F8FAFC;
+            --cyber-indigo: #6366F1;
+        }
+
+        body { background-color: var(--obsidian); color: #e2e8f0; font-family: 'Inter', sans-serif; text-align: left; -webkit-tap-highlight-color: transparent; transition: background-color 0.4s ease; }
+        .glass-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        input, select, textarea { background-color: #0f172a; border: 1px solid #334155; color: white !important; padding: 14px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 16px; transition: all 0.2s; }
+        input:focus, textarea:focus, select:focus { border-color: #818cf8; outline: none; box-shadow: 0 0 15px rgba(129, 140, 248, 0.2); background-color: #1e293b; }
+        label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #64748b; margin-bottom: 6px; display: block; letter-spacing: 0.15em; }
+
+        .vault-row { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; position: relative; overflow: hidden; }
+        .vault-row:hover { background: rgba(99, 102, 241, 0.08); border-left: 4px solid #6366f1; transform: translateX(4px); }
+        .hidden-record { display: none !important; }
+
+        /* Biometric/Sensitive Blur */
+        .sensitive-data { filter: blur(8px); transition: filter 0.3s ease; cursor: help; }
+        .sensitive-data:hover { filter: blur(0); }
+
+        @keyframes pulse-node { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.15); } }
+        .logo-pulse { animation: pulse-node 4s infinite ease-in-out; transform-origin: center; }
+
+        @keyframes scan-line { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        .scanning::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: rgba(99, 102, 241, 0.4); animation: scan-line 3s infinite linear; pointer-events: none; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* Flash Message Styling */
+        .alert { position: fixed; top: 20px; right: 20px; z-index: 5000; padding: 15px 25px; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-24 md:pb-0">
+
+    <!-- FLASH MESSAGES (Live Web Optimized) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {% if category == 'success' %}bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]{% else %}bg-rose-600 text-white shadow-[0_0_20px_rgba(244,63,94,0.4)]{% endif %}">
+              <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} mr-2"></i>
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- UNIVERSAL BRANDED HEADER -->
+    <nav class="bg-slate-950/95 backdrop-blur-md border-b border-slate-800 px-6 py-4 sticky top-0 z-[1000] shadow-2xl">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- THE HERITAGE WEAVE LOGO (v6.0) -->
+                <svg width="36" height="36" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-pulse">
+                    <defs>
+                        <linearGradient id="weave_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#818CF8" />
+                            <stop offset="100%" style="stop-color:#4F46E5" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M100 40L145 66L145 118" stroke="url(#weave_grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                    <path d="M153 133L100 163L47 133" stroke="url(#weave_grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                    <path d="M55 118L55 66L100 40" stroke="url(#weave_grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                    <circle cx="100" cy="100" r="14" fill="white" />
+                    <circle cx="100" cy="100" r="7" fill="#312E81" />
+                </svg>
+                <div class="flex flex-col text-left">
+                    <h1 class="text-sm font-black uppercase italic tracking-tighter text-white leading-none">Sovereign Heritage Core</h1>
+                    <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Your Secure Personal Database</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex items-center gap-2">
+                    <span class="h-2 w-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Cloud Vault Secured</span>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-800 hidden md:block"></div>
+                <button onclick="openEditModal(null)" class="bg-indigo-600 px-6 py-2 rounded-xl text-white font-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 transition-all hover:bg-indigo-500">
+                    <i class="fas fa-plus mr-2"></i> New Entry
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto w-full p-4 md:p-8 flex-grow flex flex-col">
+
+        <!-- SYSTEM STATUS HUD -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="glass-card p-6 rounded-3xl border border-indigo-500/20 text-left group">
+                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Encrypted Registry</p>
+                <div class="text-4xl font-black text-white italic tracking-tighter group-hover:text-indigo-400 transition-colors">{{ notes|length }} <span class="text-sm opacity-30">Records</span></div>
+            </div>
+            <div class="glass-card p-6 rounded-3xl border border-white/5 text-left">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Protection Layer</p>
+                <div class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                    <i class="fas fa-user-shield text-emerald-500"></i> Zero-Knowledge Partition
+                </div>
+            </div>
+            <div class="glass-card p-6 rounded-3xl border border-white/5 text-left">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Legacy Protocol</p>
+                <div class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                    <i class="fas fa-heartbeat animate-pulse"></i> Heartbeat Monitoring
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH ENGINE -->
+        <div class="mb-6">
+            <div class="relative group">
+                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors"></i>
+                <input type="text" id="vaultSearch" onkeyup="filterRegistry()" placeholder="Filter your private records by title or content..." class="pl-16 h-16 text-lg glass-card border-none shadow-2xl focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+        </div>
+
+        <!-- VAULT DATA GRID -->
+        <div class="flex-grow glass-card rounded-[32px] overflow-hidden border border-white/5 shadow-2xl flex flex-col">
+            <div class="bg-slate-900/50 p-5 border-b border-white/5 grid grid-cols-12 gap-4 text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] text-left">
+                <div class="col-span-8">Identifier / Data Fragment</div>
+                <div class="col-span-2">Classification</div>
+                <div class="col-span-2 text-right">Protocol Actions</div>
+            </div>
+
+            <div id="registryList" class="divide-y divide-white/5 flex-1 overflow-y-auto custom-scrollbar">
+                {% for note in notes %}
+                <div class="vault-row p-6 grid grid-cols-12 gap-4 items-center"
+                     data-id="{{ note.id }}"
+                     data-category="{{ note.category_id }}"
+                     data-title="{{ note.title }}"
+                     data-content="{{ note.content }}"
+                     onclick="openEditModal(this)">
+
+                    <div class="col-span-8 flex flex-col gap-1 text-left">
+                        <div class="flex items-center gap-3">
+                            <span class="text-white font-black text-xl tracking-tight italic">{{ note.title }}</span>
+                            {% if note.has_file == 1 %}
+                            <div class="bg-indigo-500/10 px-2 py-0.5 rounded-lg flex items-center gap-1 border border-indigo-500/20">
+                                <i class="fas fa-paperclip text-indigo-400 text-[10px]"></i>
+                                <span class="text-[8px] font-black text-indigo-400 uppercase">Attached</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <!-- Blurred preview for sensitive categories -->
+                        <span class="text-[11px] text-slate-500 truncate max-w-2xl mono opacity-60 {% if note.category_id in [3, 4] %}sensitive-data{% endif %}">
+                            {{ note.content[:120] }}...
+                        </span>
+                    </div>
+
+                    <div class="col-span-2 text-left">
+                        <span class="text-[9px] bg-slate-800/80 text-slate-400 px-3 py-1.5 rounded-xl font-black uppercase tracking-widest border border-white/5">
+                            {{ note.category_name }}
+                        </span>
+                    </div>
+
+                    <div class="col-span-2 flex justify-end gap-3" onclick="event.stopPropagation()">
+                        {% if note.has_file == 1 %}
+                        <a href="/download/{{ note.id }}" class="h-10 w-10 bg-indigo-600/10 text-indigo-400 rounded-xl flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all shadow-lg" title="Retrieve Attachment">
+                            <i class="fas fa-download"></i>
+                        </a>
+                        {% endif %}
+                        <form action="/delete_note" method="POST" onsubmit="return confirm('Security Protocol: Permanently purge this record?');">
+                            <input type="hidden" name="id" value="{{ note.id }}">
+                            <button type="submit" class="h-10 w-10 bg-slate-800/50 text-slate-500 rounded-xl flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all" title="Purge Record">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-24 text-center opacity-20 italic flex flex-col items-center">
+                    <i class="fas fa-shield-virus text-7xl mb-8 text-indigo-500"></i>
+                    <p class="text-sm uppercase font-black tracking-[0.6em]">Registry Sealed and Empty</p>
+                    <p class="text-[10px] mt-4 uppercase tracking-widest">Awaiting initial biometric handshake...</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- RECORD INTERFACE MODAL -->
+    <div id="editModal" class="fixed inset-0 bg-slate-950/98 backdrop-blur-3xl z-[2000] hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-4xl rounded-[48px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+            <div class="bg-gradient-to-r from-indigo-700 to-indigo-900 p-8 flex justify-between items-center text-white relative">
+                <div class="flex items-center gap-4">
+                    <div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
+                        <i class="fas fa-vault text-indigo-200"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalTitle" class="font-black uppercase text-xs tracking-[0.2em]">Seal New Record</h3>
+                        <p class="text-[8px] opacity-60 uppercase font-black tracking-widest mt-1">Sovereign Heritage Protocol 3.1</p>
+                    </div>
+                </div>
+                <button onclick="closeEditModal()" class="h-12 w-12 rounded-2xl bg-black/20 text-white flex items-center justify-center hover:bg-black/40 transition-all border border-white/10 shadow-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="noteForm" action="/vault" method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+                <input type="hidden" name="id" id="edit_id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-6 text-left">
+                        <div class="group">
+                            <label>Categorization</label>
+                            <select name="category_id" id="edit_category_id" class="cursor-pointer">
+                                {% for cat in categories %}<option value="{{ cat.id }}">{{ cat.name }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label>Record Subject</label>
+                            <input type="text" name="title" id="edit_title" placeholder="e.g. Identity Passport #123" required class="focus:bg-slate-900">
+                        </div>
+                        <div class="bg-indigo-500/5 p-6 rounded-3xl border border-indigo-500/10">
+                            <label class="text-indigo-400">Binary Attachment (AES-256)</label>
+                            <div class="mt-2 relative">
+                                <input type="file" name="attachment" class="text-[10px] font-black uppercase text-slate-500 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-indigo-600 file:text-white file:uppercase hover:file:bg-indigo-500">
+                            </div>
+                            <p class="text-[8px] text-slate-500 mt-4 leading-relaxed">
+                                <i class="fas fa-info-circle mr-1"></i> Data is encrypted in-memory before database persistence. Server-side previews are disabled for security.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-left flex flex-col">
+                        <label>Secure Payload (Text Fragment)</label>
+                        <textarea name="content" id="edit_content" rows="12" class="mono text-xs leading-relaxed flex-grow custom-scrollbar" placeholder="Enter sensitive data here..." required></textarea>
+                        <div class="mt-4 flex items-center gap-2 text-[8px] font-black text-slate-600 uppercase tracking-widest">
+                            <span class="h-1.5 w-1.5 bg-emerald-500 rounded-full"></span> Zero-Knowledge Ready
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-4 pt-8 border-t border-white/5">
+                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-slate-800 text-slate-400 hover:text-white font-black py-5 rounded-3xl uppercase text-[10px] tracking-widest transition-all">Discard</button>
+                    <button type="submit" id="submitBtn" class="flex-2 bg-indigo-600 text-white font-black py-5 px-12 rounded-3xl uppercase text-[10px] tracking-widest shadow-[0_10px_30px_rgba(79,70,229,0.4)] active:scale-95 transition-all hover:bg-indigo-500">
+                        Seal & Persist
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // FLASH MESSAGE AUTO-HIDE
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(a => a.style.opacity = '0');
+            setTimeout(() => alerts.forEach(a => a.style.display = 'none'), 500);
+        }, 3000);
+
+        function filterRegistry() {
+            const query = document.getElementById('vaultSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('.vault-row');
+            rows.forEach(row => {
+                const title = row.getAttribute('data-title').toLowerCase();
+                const content = row.getAttribute('data-content').toLowerCase();
+                if (title.includes(query) || content.includes(query)) {
+                    row.classList.remove('hidden-record');
+                } else {
+                    row.classList.add('hidden-record');
+                }
+            });
+        }
+
+        function openEditModal(rowEl) {
+            const form = document.getElementById('noteForm');
+            if (rowEl) {
+                // UPDATE MODE
+                document.getElementById('modalTitle').innerText = "Modify Sealed Record";
+                document.getElementById('edit_id').value = rowEl.getAttribute('data-id');
+                document.getElementById('edit_title').value = rowEl.getAttribute('data-title');
+                document.getElementById('edit_content').value = rowEl.getAttribute('data-content');
+                document.getElementById('edit_category_id').value = rowEl.getAttribute('data-category');
+                document.getElementById('submitBtn').innerText = "Update & Re-Seal";
+                form.action = "/update_note";
+            } else {
+                // NEW RECORD MODE
+                document.getElementById('modalTitle').innerText = "Seal New Record";
+                document.getElementById('edit_id').value = "";
+                document.getElementById('edit_title').value = "";
+                document.getElementById('edit_content').value = "";
+                document.getElementById('submitBtn').innerText = "Seal & Persist";
+                form.action = "/vault";
+            }
+            document.getElementById('editModal').classList.remove('hidden');
+            document.body.classList.add('scanning');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.body.classList.remove('scanning');
+        }
+
+        // Global hotkey to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeEditModal();
+        });
+    </script>
+</body>
+</html>
