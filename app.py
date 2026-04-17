@@ -23,11 +23,11 @@ except ImportError:
     class config:
         DB_HOST = "MeirNiv.mysql.pythonanywhere-services.com"
         DB_USER = "MeirNiv"
-        DB_PASSWORD = "mayyam28" 
+        DB_PASSWORD = "mayyam28"
         DB_NAME = "MeirNiv$v"
 
 app = Flask(__name__)
-app.secret_key = "sovereign_trust_protocol_v7.6_2024"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-this")
 
 # --- DATABASE HANDLER ---
 def get_db_connection(use_dict=True):
@@ -37,8 +37,9 @@ def get_db_connection(use_dict=True):
             user=config.DB_USER,
             password=config.DB_PASSWORD,
             database=config.DB_NAME,
-            autocommit=True 
-        )
+            port=getattr(config, "DB_PORT", 3306),
+            autocommit=Truehost=config.DB_HOST,
+      )
         return conn, conn.cursor(dictionary=use_dict)
     except Exception as e:
         print(f"[DATABASE ERROR] Connection failed: {e}")
@@ -66,7 +67,7 @@ def save_attachments(cursor, note_id, files):
             file_bytes = f.read()
             if file_bytes:
                 cursor.execute("""
-                    INSERT INTO note_attachments (note_id, file_name, file_data) 
+                    INSERT INTO note_attachments (note_id, file_name, file_data)
                     VALUES (%s, %s, %s)
                 """, (note_id, f.filename, file_bytes))
                 save_count += 1
@@ -122,14 +123,14 @@ def export_vault():
             WHERE n.user_id = %s
         """, (user_id,))
         notes = cursor.fetchall()
-        
+
         vault_fragments = []
         for note in notes:
             cursor.execute("SELECT file_name FROM note_attachments WHERE note_id = %s", (note['id'],))
             attachments = cursor.fetchall()
             note['attached_files'] = [a['file_name'] for a in attachments]
             vault_fragments.append(note)
-            
+
         payload = {
             "identity": session.get('user_email'),
             "export_date": datetime.now().isoformat(),
@@ -221,12 +222,12 @@ def notes_page():
             title, content, cat_id = request.form.get('title'), request.form.get('content'), request.form.get('category_id') or 2
             eh, ec = request.form.get('elite_headers', ''), request.form.get('elite_content', '')
             cursor.execute("""
-                INSERT INTO system_notes (user_id, title, content, category_id, elite_headers, elite_content) 
+                INSERT INTO system_notes (user_id, title, content, category_id, elite_headers, elite_content)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (user_id, title, content, cat_id, eh, ec))
             new_id = cursor.lastrowid
             save_attachments(cursor, new_id, request.files.getlist('attachment'))
-            conn.commit() 
+            conn.commit()
             return redirect(url_for('notes_page', cat_id=cat_id))
 
         cursor.execute("SELECT * FROM note_categories WHERE is_archived = 0 ORDER BY name ASC")
@@ -268,11 +269,11 @@ def update_note():
             try:
                 # Direct update based on confirmed schema
                 cursor.execute("""
-                    UPDATE system_notes 
-                    SET title=%s, content=%s, category_id=%s, elite_headers=%s, elite_content=%s 
+                    UPDATE system_notes
+                    SET title=%s, content=%s, category_id=%s, elite_headers=%s, elite_content=%s
                     WHERE id=%s
                 """, (title, content, cat_id, eh, ec, note_id))
-                
+
                 # Sealing binary attachments
                 save_attachments(cursor, note_id, request.files.getlist('attachment'))
                 conn.commit()
