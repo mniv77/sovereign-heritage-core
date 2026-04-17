@@ -3,3 +3,6 @@ __pycache__/
 backup/
 user_1_heritage_export.json
 vault_debug.py
+
+config.py
+exports/
