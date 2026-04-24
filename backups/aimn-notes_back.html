@@ -1,0 +1,213 @@
+<!-- templates/aimn-notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Notes - Fixed Search</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background:#020617;
+            color:white;
+            font-family: sans-serif;
+            margin:0;
+        }
+
+        .input-vault {
+            background:#0f172a;
+            border:1px solid #334155;
+            color:white;
+            padding:10px;
+            border-radius:10px;
+            width:100%;
+        }
+
+        .layout {
+            display:grid;
+            grid-template-columns: 20% 30% 50%;
+            height:100vh;
+        }
+
+        .panel {
+            padding:10px;
+            overflow:auto;
+            border-right:1px solid #1e293b;
+        }
+
+        .note-box {
+            padding:20px;
+            background:#0f172a;
+            border-radius:16px;
+            white-space:pre-wrap;
+        }
+
+        mark {
+            background:yellow;
+            color:black;
+            padding:2px;
+            border-radius:4px;
+        }
+
+        .btn {
+            background:#4f46e5;
+            padding:8px 12px;
+            border-radius:8px;
+            font-size:12px;
+            font-weight:bold;
+            color:white;
+            cursor:pointer;
+        }
+
+        .row {
+            padding:10px;
+            margin-bottom:5px;
+            background:#0f172a;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .row:hover {
+            background:#1e293b;
+        }
+        
+        .folder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.folder-item {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #0f172a;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.folder-item:hover {
+    background: #1e293b;
+    border-color: #334155;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- LEFT: FOLDERS -->
+    <div class="panel">
+
+        <div class="flex justify-between items-center mb-4 text-left">
+            <div class="flex flex-col text-left">
+                <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">1. Folders</h3>
+                <span class="text-[8px] font-bold text-slate-600 uppercase italic">Categories</span>
+            </div>
+
+            <button onclick="toggleModal('addCategoryModal')"
+                    class="h-8 w-8 bg-indigo-600 text-white rounded-xl flex items-center justify-center">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+
+        <div class="folder-list">
+            {% for cat in categories %}
+                <a class="folder-item"
+                   href="/notes?cat_id={{ cat.id }}">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- MIDDLE: NOTES LIST -->
+    <div class="panel">
+
+        <h3>Notes</h3>
+
+        {% for t in titles %}
+            <a class="row"
+               href="/notes?cat_id={{ selected_category.id }}&note_id={{ t.id }}">
+                {{ t.title }}
+            </a>
+        {% endfor %}
+
+    </div>
+
+    <!-- RIGHT: VIEW + SEARCH -->
+    <div class="panel">
+
+        {% if selected_record %}
+
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input id="searchText"
+                       class="input-vault"
+                       placeholder="Find in note...">
+
+                <button class="btn" onclick="findInNote()">Find</button>
+            </div>
+
+            <div id="noteView" class="note-box">
+                {{ selected_record.content }}
+            </div>
+
+            <button class="btn" onclick="enterEditMode()">
+                Edit
+            </button>
+
+        {% else %}
+            <div>Select a note</div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+
+function findInNote() {
+    const q = document.getElementById("searchText").value;
+    const view = document.getElementById("noteView");
+
+    if (!q || !view) return;
+
+    const text = view.innerText;
+
+    const index = text.toLowerCase().indexOf(q.toLowerCase());
+
+    if (index === -1) {
+        alert("Not found");
+        return;
+    }
+
+    const before = text.substring(0, index);
+    const match = text.substring(index, index + q.length);
+    const after = text.substring(index + q.length);
+
+    view.innerHTML =
+        before +
+        `<mark>${match}</mark>` +
+        after;
+
+    view.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function enterEditMode() {
+    alert("Edit mode already exists in your system (keep your existing logic)");
+}
+
+</script>
+
+</body>
+</html>
